@@ -9,10 +9,17 @@ Wine Quality Reds Exploration by HanByul Yang
 # This prevents the code from displaying in the knitted HTML output.
 # You should set echo=FALSE for all code chunks in your file.
 
+# install.packages("ggplot2", dependencies = T) 
+# install.packages("knitr", dependencies = T)
+# install.packages("dplyr", dependencies = T)
+# install.packages("GGally")
+# install.packages("scales")
+# install.packages("memisc")
+
+library(ggplot2)
 library(GGally)
 library(scales)
 library(memisc)
-library(ggplot2)
 library(knitr)
 library(dplyr)
 ```
