@@ -1,8 +1,8 @@
 Wine Quality Reds Exploration by HanByul Yang
 ========================================================
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # in your analysis in this code chunk.
 
 # Notice that the parameter "echo" was set to FALSE for this code chunk.
@@ -15,36 +15,148 @@ Wine Quality Reds Exploration by HanByul Yang
 # install.packages("GGally")
 # install.packages("scales")
 # install.packages("memisc")
+# install.packages("corrplot")
 
-library(ggplot2)
-library(GGally)
-library(scales)
-library(memisc)
-library(knitr)
-library(dplyr)
+suppressMessages(library(ggplot2))
+suppressMessages(library(GGally))
+suppressMessages(library(scales))
+suppressMessages(library(memisc))
+suppressMessages(library(knitr))
+suppressMessages(library(dplyr))
+suppressMessages(library(gridExtra))
 ```
 
 ```{r echo=FALSE, Load_the_Data}
 # Load the Data
-wineQualityReds <- read.csv('wineQualityReds.csv')
+df <- read.csv('wineQualityReds.csv')
+
+# Remove unnecessary column
+drops <- c("X")
+wineQuality <- df[, !(names(df) %in% drops)]
 ```
 
 # Univariate Plots Section
-```{r echo=FALSE, Univariate_Plots}
-dim(wineQualityReds)
+```{r echo=FALSE, Summary}
+# Summarize the data set
+dim(wineQuality)
+names(wineQuality)
+str(wineQuality)
+summary(wineQuality)
 ```
 
-```{r echo=FALSE}
-names(wineQualityReds)
+The median qulity of red wine is 6. median residual.sugar is 2.2 g / dm^3.
+median alcohol of red wine is 10.2 %.
+
+
+```{r echo=FALSE, fixed.acidity}
+# qplot(fixed.acidity, data = wineQuality)
+qplot(fixed.acidity, data = wineQuality)
+qplot(fixed.acidity, data = wineQuality, binwidth=0.1)
 ```
 
-```{r echo=FALSE}
-str(wineQualityReds)
+Most red wines have fixed acidity between 7.10 g/dm^3 and  9.20 g/dm^3.
+
+```{r echo=FALSE, volatile.acidity}
+qplot(volatile.acidity, data = wineQuality, binwidth = 0.01)
+qplot(volatile.acidity, data = wineQuality, binwidth = 0.01) +
+  coord_cartesian(xlim=c(0, 1.1))
 ```
 
-```{r echo=FALSE}
-summary(wineQualityReds)
+Most red wines have volatile acidity between 4 g/dm^3 and 7 g/dm^3. There are some outliers.
+
+```{r echo=FALSE, citric.acid}
+qplot(citric.acid, data = wineQuality, binwidth = 0.01)
+qplot(citric.acid, data = wineQuality, binwidth = 0.01) + 
+  coord_cartesian(xlim=c(0, 0.8))
+table(wineQuality$citric.acid == 0)
 ```
+
+138 red wines have 0 g/dm^3 citric acid. There is an outlier that has 1.0 g/dm^3.
+
+```{r echo=FALSE, table citric.acid}
+summary(wineQuality$citric.acid)
+sort(table(wineQuality$citric.acid), decreasing = T)
+```
+
+```{r echo=FALSE, residual.sugar}
+qplot(residual.sugar, data = wineQuality)
+qplot(residual.sugar, data = wineQuality, binwidth = 0.1) + 
+  coord_cartesian(xlim=c(0, 9))
+summary(wineQuality$residual.sugar)
+```
+
+Most of red wines have residual sugar between 1.9 g/dm^3 to 2.6 g/dm^3: median 2.2g/dm^3 and mean 2.539 g/dm^3.
+
+```{r echo=FALSE, chlorides}
+qplot(chlorides, data = wineQuality, binwidth = 0.005)
+qplot(chlorides, data = wineQuality, binwidth = 0.005) + 
+  coord_cartesian(xlim=c(0, 0.2))
+qplot(chlorides, data = wineQuality, binwidth = 0.01) +
+  scale_x_log10(breaks = c(0.01, 0.025, 0.05, 0.1, 0.2, 0.5))
+summary(wineQuality$chlorides)
+```
+
+Most of red wines have chlorides between 0.07 g/dm^3 to 0.09 g/dm^3: median 0.079 g/dm^3 and mean 0.08747 g/dm^3.
+
+```{r echo=FALSE, table chlorides}
+sort(table(wineQuality$chlorides), decreasing = T)
+```
+
+```{r echo=FALSE, free.sulfur.dioxide}
+qplot(free.sulfur.dioxide, data = wineQuality)
+qplot(free.sulfur.dioxide, data = wineQuality, binwidth = 0.5)
+
+summary(wineQuality$free.sulfur.dioxide)
+```
+
+Most free.sulfur.dioxide values are integers. Most red wines have a free.sulfur.dioxide between 7 mg/dm^3 and 21 mg/dm^3.
+
+```{r echo=FALSE, total.sulfur.dioxide}
+qplot(total.sulfur.dioxide, data = wineQuality, binwidth = 5)
+qplot(total.sulfur.dioxide, data = wineQuality, binwidth = 5) + 
+  coord_cartesian(xlim=c(0, 170))
+summary(wineQuality$total.sulfur.dioxide)
+```
+All of total.sulfur.dioxide values are integers. Most red wines have a total.sulfur.dioxide between 22 mg/dm^3 and 62 mg/dm^3. There are some outliers.
+
+```{r echo=FALSE, density}
+qplot(density, data = wineQuality, binwidth = 0.0005)
+summary(wineQuality$density)
+```
+
+```{r echo=FALSE, pH}
+qplot(pH, data = wineQuality, binwidth = 0.05)
+summary(wineQuality$pH)
+```
+
+Most of red wines have a pH between 3.21 and 3.4: median 3.31 and mean 3.311.
+
+```{r echo=FALSE, sulphates}
+qplot(sulphates, data = wineQuality, binwidth = 0.05)
+qplot(sulphates, data = wineQuality, binwidth = 0.05) +
+  coord_cartesian(xlim=c(0.2, 1.5))
+summary(wineQuality$sulphates)
+```
+
+```{r echo=FALSE, alcohol}
+qplot(alcohol, data = wineQuality, binwidth = 0.1)
+summary(wineQuality$alcohol)
+```
+
+Most of red wines have a alcohol between 9.5 and 11.1: median 10.2 and mean 10.42.
+
+```{r echo=FALSE, quality}
+qplot(x = quality, data = wineQuality)
+summary(wineQuality$quality)
+```
+
+All of quality values are integers and between 3 and 8.
+Most of red wines have a quality between 5 and 6: median 6 and mean 5.636
+
+```{r echo=FALSE, table quality}
+sort(table(wineQuality$quality), decreasing = T)
+```
+
 
 # Univariate Analysis
 
@@ -62,6 +174,17 @@ summary(wineQualityReds)
 
 # Bivariate Plots Section
 ```{r echo=FALSE, Bivariate_Plots}
+M <- cor(wineQuality)
+
+library(corrplot) #package corrplot
+corrplot(M, method = "circle") #plot matrix
+```
+
+```{r}
+ggpairs(wineQuality)
+```
+
+```{r}
 
 ```
 
