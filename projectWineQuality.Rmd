@@ -16,6 +16,7 @@ Wine Quality Reds Exploration by HanByul Yang
 # install.packages("scales")
 # install.packages("memisc")
 # install.packages("corrplot")
+# install.packages("psych")
 
 suppressMessages(library(ggplot2))
 suppressMessages(library(GGally))
@@ -24,11 +25,12 @@ suppressMessages(library(memisc))
 suppressMessages(library(knitr))
 suppressMessages(library(dplyr))
 suppressMessages(library(gridExtra))
+library(psych)
 ```
 
 ```{r echo=FALSE, Load_the_Data}
 # Load the Data
-df <- read.csv('wineQualityReds.csv')
+df <- read.csv('wineQualityWhites.csv')
 
 # Remove unnecessary column
 drops <- c("X")
@@ -82,6 +84,8 @@ sort(table(wineQuality$citric.acid), decreasing = T)
 qplot(residual.sugar, data = wineQuality)
 qplot(residual.sugar, data = wineQuality, binwidth = 0.1) + 
   coord_cartesian(xlim=c(0, 9))
+qplot(residual.sugar, data = wineQuality, binwidth = 0.05) + 
+  scale_x_log10()
 summary(wineQuality$residual.sugar)
 ```
 
@@ -105,7 +109,8 @@ sort(table(wineQuality$chlorides), decreasing = T)
 ```{r echo=FALSE, free.sulfur.dioxide}
 qplot(free.sulfur.dioxide, data = wineQuality)
 qplot(free.sulfur.dioxide, data = wineQuality, binwidth = 0.5)
-
+qplot(free.sulfur.dioxide, data = wineQuality, binwidth = 0.1) +
+  scale_x_log10()
 summary(wineQuality$free.sulfur.dioxide)
 ```
 
@@ -157,6 +162,24 @@ Most of red wines have a quality between 5 and 6: median 6 and mean 5.636
 sort(table(wineQuality$quality), decreasing = T)
 ```
 
+```{r echo=FALSE}
+
+# attach(wineQuality)
+# wineQuality$quality_class[quality <= 3] <- 1
+# wineQuality$quality_class[quality > 3 & quality <= 6] <- 2
+# wineQuality$quality_class[quality > 6] <- 3
+# detach(wineQuality)
+# summary(wineQuality$quality_class)
+# 
+# wineQuality$quality_class <- factor(wineQuality$quality_class, labels = c("low", "mid", "high"))
+wineQuality$quality_class <- factor(wineQuality$quality, labels = c(3:9))
+```
+
+```{r echo=FALSE}
+levels(wineQuality$quality_class)
+summary(wineQuality$quality_class)
+```
+
 
 # Univariate Analysis
 
@@ -174,19 +197,95 @@ sort(table(wineQuality$quality), decreasing = T)
 
 # Bivariate Plots Section
 ```{r echo=FALSE, Bivariate_Plots}
-M <- cor(wineQuality)
-
-library(corrplot) #package corrplot
-corrplot(M, method = "circle") #plot matrix
+cor(wineQuality[, c(1:12)])
 ```
 
-```{r}
-ggpairs(wineQuality)
+The alcohol and density are the most correlated with quality.
+
+```{r, echo=FALSE}
+pairs.panels(wineQuality)
 ```
 
-```{r}
-
+```{r echo=FALSE, quality and alcohol}
+qplot(y = alcohol, x = quality, data = wineQuality)
 ```
+
+```{r, echo=FALSE, quality and density}
+qplot(y = density, x = quality, data = wineQuality)
+qplot(y = density, x = quality, data = wineQuality) +
+  coord_cartesian(ylim = c(0.985, 1.005))
+```
+
+```{r, echo=FALSE, quality_class}
+qplot(quality_class, data = wineQuality, geom="bar")
+```
+
+```{r, echo=FALSE, quality_class and alcohol}
+qplot(x = quality_class, y = alcohol, data = wineQuality, geom="boxplot")
+qplot(x = quality_class, y = alcohol, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim=c(8, 13))
+```
+
+```{r, echo=FALSE, density and alcohol}
+qplot(x = quality_class, y = density, data = wineQuality, geom="boxplot")
+qplot(x = quality_class, y = density, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(0.985,1.005))
+```
+
+```{r, echo=FALSE, quality_class and fixed.acidity}
+qplot(x = quality_class, y = fixed.acidity, data = wineQuality, geom="boxplot")
+qplot(x = quality_class, y = fixed.acidity, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(5,11))
+```
+
+```{r, echo=FALSE, quality_class and volatile.acidity}
+qplot(x = quality_class, y = volatile.acidity, data = wineQuality, geom="boxplot")
+qplot(x = quality_class, y = volatile.acidity, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(0.15,0.5))
+```
+
+```{r, echo=FALSE, quality_class and citric.acid}
+qplot(x = quality_class, y = citric.acid, data = wineQuality, geom="boxplot")
+qplot(x = quality_class, y = citric.acid, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(0.0, 0.7))
+```
+
+```{r, echo=FALSE, quality_class and residual.sugar}
+qplot(x = quality_class, y = residual.sugar, data = wineQuality, geom="boxplot")
+qplot(x = quality_class, y = residual.sugar, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(0, 25))
+```
+
+```{r, echo=FALSE, quality_class and chlorides}
+qplot(x = quality_class, y = chlorides, data = wineQuality, geom="boxplot")
+qplot(x = quality_class, y = chlorides, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(0, 0.09))
+```
+
+```{r, echo=FALSE, quality_class and free.sulfur.dioxide}
+qplot(x = quality_class, y = free.sulfur.dioxide, data = wineQuality, geom="boxplot")
+qplot(x = quality_class, y = free.sulfur.dioxide, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(0, 90))
+```
+
+```{r, echo=FALSE, quality_class and total.sulfur.dioxide}
+qplot(x = quality_class, y = total.sulfur.dioxide, data = wineQuality, geom="boxplot")
+qplot(x = quality_class, y = total.sulfur.dioxide, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(0, 300))
+```
+
+```{r, echo=FALSE, quality_class and pH}
+qplot(x = quality_class, y = pH, data = wineQuality, geom="boxplot")
+qplot(x = quality_class, y = pH, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(2.7, 3.7))
+```
+
+```{r, echo=FALSE, quality_class and sulphates}
+qplot(x = quality_class, y = sulphates, data = wineQuality, geom="boxplot")
+qplot(x = quality_class, y = sulphates, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(0.2, 0.9))
+```
+
 
 # Bivariate Analysis
 
