@@ -481,4 +481,4 @@ As I expected, the most correlated feature of quality is "alcohol" and there are
 
 "alcohol" is negatively correlated with "density" regardless of quality. Percent of "alcohol" is increased, "density" is decreased.
 
-A limitation of this analysis is that the data set sampled from the Portuguese "Vinho Verde" red wine. It might be interesting to obtain data set from various regions to eliminate any bias created by various products.
+A limitation of this analysis is that the data set are sampled from the Portuguese "Vinho Verde" red wine. It might be interesting to obtain data set from various regions to eliminate any bias created by various products.
