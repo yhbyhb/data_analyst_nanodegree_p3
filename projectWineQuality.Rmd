@@ -11,6 +11,7 @@ library(knitr)
 library(dplyr)
 library(gridExtra)
 library(psych)
+theme_set(theme_minimal(20))
 ```
 
 ```{r echo=FALSE, Load_the_Data}
@@ -57,8 +58,7 @@ Most red wines have volatile acidity between 039 g/dm^3 and 0.64 g/dm^3. There a
 
 ```{r echo=FALSE, citric.acid}
 qplot(citric.acid, data = wineQuality)
-qplot(citric.acid, data = wineQuality, binwidth = 0.01) + 
-  coord_cartesian(xlim=c(0, 1.1))
+qplot(citric.acid, data = wineQuality, binwidth = 0.03)
 table(wineQuality$citric.acid == 0)
 ```
 
@@ -181,6 +181,9 @@ Alcohol, density and pH seems to contribute the quality. I think alcohol is most
 Yes, I created "quality_class" variable for bivariate or multivariate analysis of "quality" feature.
 
 ### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
+The citric acid has several peaks around 0, 0.25 and 0.5g/dm^3.
+138 red wines have 0 g/dm^3 citric acid which is the highest peak. 
+
 The chlorides is log-transformed. the transformed distribution shows normal distribution. Most of red wines have chlorides between 0.07 g/dm^3 to 0.09 g/dm^3: median 0.079 g/dm^3 and mean 0.08747 g/dm^3. 
 
 # Bivariate Plots Section
@@ -188,9 +191,9 @@ The chlorides is log-transformed. the transformed distribution shows normal dist
 cor(wineQuality[, c(1:12)])
 ```
 
-The alcohol and sulphates are the most correlated with quality.
+The alcohol and sulphates are the most correlated features with quality. The volatile.acidity is negatively correlated with quality.
 
-```{r, echo=FALSE, Pairs_Panel}
+```{r echo=FALSE, Pairs_Panel}
 pairs.panels(wineQuality[, c(1:12)])
 ```
 
@@ -202,7 +205,7 @@ ggplot(aes(x = quality, y = alcohol), data = wineQuality) +
   geom_line(stat='summary',fun.y=median)
 ```
 
-```{r, echo=FALSE, quality_class_vs_alcohol}
+```{r echo=FALSE, quality_class_vs_alcohol}
 qplot(x = quality_class, y = alcohol, data = wineQuality, geom="boxplot")
 ```
 
@@ -216,13 +219,13 @@ ggplot(aes(x = alcohol), data = wineQuality) +
 
 As quality increases, median of alcohol tends to increse.
 
-```{r, echo=FALSE, alcohol_vs_quality_linear_model}
+```{r echo=FALSE, alcohol_vs_quality_linear_model}
 # linear model for alcohol and quality. Remove outlier exceed 0.999
 # quantile(wineQuality$alcohol, probs = seq(0, 1, 0.01))
 # quantile(wineQuality$alcohol, 0.999)
 qplot(x = alcohol, y = quality, color = I('black'), alpha = I(1/10),
       data = subset(wineQuality,
-                    alcohol > 0 & alcohol <= quantile(wineQuality$alcohol, 0.999))) +
+                    alcohol <= quantile(wineQuality$alcohol, 0.999))) +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 ```
@@ -230,8 +233,8 @@ qplot(x = alcohol, y = quality, color = I('black'), alpha = I(1/10),
 ```{r echo=FALSE, Linear_Model_alcohol_and_quality}
 # linear model for alcohol and quality. Remove outlier exceed 0.999
 alcoholQualityLM <- lm(quality ~ alcohol,
-                    data = subset(wineQuality,
-                                  alcohol > 0 & alcohol <= quantile(wineQuality$alcohol, 0.999)))
+                       data = subset(wineQuality, 
+                                     alcohol <= quantile(wineQuality$alcohol, 0.999)))
 summary(alcoholQualityLM)
 ```
 
@@ -258,41 +261,41 @@ grid.arrange(p1, p2, p3)
 
 Also, alcohol has a negative correlation with total.sulfur.dioxide, free.sulfur.dioxide and chlorides.
 
-```{r, echo=FALSE, quality_vs_density}
+```{r echo=FALSE, quality_vs_density}
 qplot(y = density, x = quality, data = wineQuality)
 ggplot(aes(y = density, x = quality), data = wineQuality) +
   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/6, pch=21, cex=4)
 ```
 
-```{r, echo=FALSE, density_vs_alcohol}
+```{r echo=FALSE, density_vs_alcohol}
 qplot(x = quality_class, y = density, data = wineQuality)
 qplot(x = quality_class, y = density, data = wineQuality, geom="boxplot")
 ```
 
 As quality increases, median of density tends to decrease.
 
-```{r, echo=FALSE, quality_class_vs_fixed.acidity}
+```{r echo=FALSE, quality_class_vs_fixed.acidity}
 qplot(x = quality_class, y = fixed.acidity, data = wineQuality)
 qplot(x = quality_class, y = fixed.acidity, data = wineQuality, geom="boxplot")
 ```
 
 There seems to no strong relationship between quality and fixed.acidity.
 
-```{r, echo=FALSE, quality_class_vs_volatile.acidity}
+```{r echo=FALSE, quality_class_vs_volatile.acidity}
 qplot(x = quality_class, y = volatile.acidity, data = wineQuality)
 qplot(x = quality_class, y = volatile.acidity, data = wineQuality, geom="boxplot")
 ```
 
-As quality increases, median of density tends to decrease.
+As quality increases, median of volatile.acidity tends to decrease.
 
-```{r, echo=FALSE, quality_class_vs_citric.acid}
+```{r echo=FALSE, quality_class_vs_citric.acid}
 qplot(x = quality_class, y = citric.acid, data = wineQuality)
 qplot(x = quality_class, y = citric.acid, data = wineQuality, geom="boxplot")
 ```
 
 As quality increases, median of citric.acid tends to increase.
 
-```{r, echo=FALSE, quality_class_vs_residual.sugar}
+```{r echo=FALSE, quality_class_vs_residual.sugar}
 qplot(x = quality_class, y = residual.sugar, data = wineQuality)
 qplot(x = quality_class, y = residual.sugar, data = wineQuality, geom="boxplot") +
   coord_cartesian(ylim = c(0, 8))
@@ -300,7 +303,7 @@ qplot(x = quality_class, y = residual.sugar, data = wineQuality, geom="boxplot")
 
 There seems to no strong relationship between quality and residual.sugar
 
-```{r, echo=FALSE, quality_class_vs_chlorides}
+```{r echo=FALSE, quality_class_vs_chlorides}
 qplot(x = quality_class, y = chlorides, data = wineQuality)
 qplot(x = quality_class, y = chlorides, data = wineQuality, geom="boxplot") +
   coord_cartesian(ylim = c(0, 0.25))
@@ -308,14 +311,14 @@ qplot(x = quality_class, y = chlorides, data = wineQuality, geom="boxplot") +
 
 As quality increases, median of chlorides tends to decrease.
 
-```{r, echo=FALSE, quality_class_vs_free.sulfur.dioxide}
+```{r echo=FALSE, quality_class_vs_free.sulfur.dioxide}
 qplot(x = quality_class, y = free.sulfur.dioxide, data = wineQuality)
 qplot(x = quality_class, y = free.sulfur.dioxide, data = wineQuality, geom="boxplot")
 ```
 
 There seems to no relationship between quality and free.sulfur.dioxide.
 
-```{r, echo=FALSE, quality_class_vs_total.sulfur.dioxide}
+```{r echo=FALSE, quality_class_vs_total.sulfur.dioxide}
 qplot(x = quality_class, y = total.sulfur.dioxide, data = wineQuality)
 qplot(x = quality_class, y = total.sulfur.dioxide, data = wineQuality, geom="boxplot") +
   coord_cartesian(ylim = c(0, 170))
@@ -323,14 +326,14 @@ qplot(x = quality_class, y = total.sulfur.dioxide, data = wineQuality, geom="box
 
 There seems to no relationship between quality and total.sulfur.dioxide.
 
-```{r, echo=FALSE, quality_class_vs_pH}
+```{r echo=FALSE, quality_class_vs_pH}
 qplot(x = quality_class, y = pH, data = wineQuality)
 qplot(x = quality_class, y = pH, data = wineQuality, geom="boxplot")
 ```
 
 As quality increases, median of pH tends to decrease.
 
-```{r, echo=FALSE, quality_class_vs_sulphates}
+```{r echo=FALSE, quality_class_vs_sulphates}
 qplot(x = quality_class, y = sulphates, data = wineQuality)
 qplot(x = quality_class, y = sulphates, data = wineQuality, geom="boxplot") +
   coord_cartesian(ylim = c(0.3, 1.25))
@@ -338,35 +341,11 @@ qplot(x = quality_class, y = sulphates, data = wineQuality, geom="boxplot") +
 
 As quality increases, median of sulphates increase
 
-```{r echo=FALSE, total.sulfur.dioxide_vs_sulphates}
-qplot(x = total.sulfur.dioxide, y = sulphates, data = wineQuality)
-ggplot(aes(x = total.sulfur.dioxide, y = sulphates), data = wineQuality) +
-  geom_line(stat='summary',fun.y=median)
-```
-
-```{r echo=FALSE, total.sulfur.dioxide_vs_residual.sugar}
-qplot(x = total.sulfur.dioxide, y = residual.sugar, data = wineQuality)
-ggplot(aes(x = total.sulfur.dioxide, y = residual.sugar), data = wineQuality) +
-  geom_line(stat='summary',fun.y=median)
-```
-
-```{r echo=FALSE, free.sulfur.dioxide_vs_sulphates}
-qplot(x = free.sulfur.dioxide, y = sulphates, data = wineQuality)
-ggplot(aes(x = free.sulfur.dioxide, y = sulphates), data = wineQuality) +
-  geom_line(stat='summary',fun.y=median)
-```
-
-```{r echo=FALSE, free.sulfur.dioxide_vs_residual.sugar}
-qplot(x = free.sulfur.dioxide, y = residual.sugar, data = wineQuality)
-ggplot(aes(x = free.sulfur.dioxide, y = residual.sugar), data = wineQuality) +
-  geom_line(stat='summary',fun.y=median)
-```
 # Bivariate Analysis
 
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
 
-Quality correlates with alcohol and volatile.acidity.
-As quality increases, median of alcohol tends to increse.
+Quality correlates with alcohol and sulphates and negatively correlated with volatile.acidity.
 
 ### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
 
@@ -379,18 +358,24 @@ The quality of red wine is positively correlated with alcohol and sulphates and 
 
 
 # Multivariate Plots Section
-```{r}
+```{r echo=FALSE, alchol_and_quality}
+qplot(alcohol, data = wineQuality,
+      fill = quality_class)
 qplot(alcohol, data = wineQuality,
       color = quality_class, geom = 'density')
 ```
 
 ```{r echo=FALSE, alcohol_density_and_quality}
-qplot(x = alcohol, y = density, data = wineQuality) +
-  facet_wrap(~quality_class)
+# qplot(x = alcohol, y = density, data = wineQuality) +
+#   facet_wrap(~quality_class)
 ggplot(aes(x = alcohol, y = density), data = wineQuality) +
   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/10, pch=21, cex=4) +
   facet_wrap(~quality_class)
+ggplot(aes(x = alcohol, y = density), data = wineQuality) +
+  geom_jitter(aes(color=quality_class, bg=quality_class), alpha = 1/4, pch=21, cex=4)
 ```
+
+Alcohol has a negative correlation with density. 
 
 ```{r echo=FALSE, alcohol_pH_and_quality}
 qplot(x = alcohol, y = pH, data = wineQuality) +
@@ -413,8 +398,12 @@ mtable(m1, m2, m3)
 
 ### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
 
-### Were there any interesting or surprising interactions between features?
+There is a negative correlateion between alcohol and density feature. It can be seen in every quality in red wine data set.
 
+Despite of low R-squared value of 0.341, I built a linear model that pridcit the quality of red wine. 
+
+### Were there any interesting or surprising interactions between features?
+From the above the scatter plot of alcohol and pH, there seems to be any specific relations between alcohol and pH.
 
 ### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
 Yes, I created a linear model using quality and alcohol, volatile.acidity and sulphates. The variables are selected by absolute value of correlation of quality.
@@ -427,27 +416,54 @@ The variables in this linear model can account for 34.1% of the variance in the 
 
 ### Plot One
 ```{r echo=FALSE, Plot_One}
-
+# qplot(citric.acid, data = wineQuality, binwidth = 0.01)
+ggplot(aes(x=citric.acid), data = wineQuality) +
+  geom_histogram(fill = I('#099DD9'), binwidth = 0.03) +
+  ggtitle('Citric acid histogram ') +
+  xlab('citric acid (g / dm^3 )') + 
+  ylab('Number of red wine')
 ```
 
 ### Description One
-
+The citric acid has several peaks around 0, 0.25 and 0.5 g/dm^3.
+138 red wines have 0 g/dm^3 citric acid which is the highest peak. 
 
 ### Plot Two
 ```{r echo=FALSE, Plot_Two}
+theme_set(theme_minimal(12))
 
+p1 <- ggplot(aes(x = quality_class, y = alcohol), data = wineQuality)  +
+  geom_boxplot() +
+  ggtitle('Alcohol by quality') +
+  xlab('quality') +
+  ylab('alcohol (%)')
+
+p2 <- ggplot(aes(x=alcohol), data = wineQuality) +
+  geom_density(aes(color = quality_class)) +
+  guides(color = guide_legend(reverse = T, title = 'quality')) +
+  ggtitle('Density of alcohol by quality') +
+  xlab('alcohol (%)') +
+  ylab('Density')
+
+grid.arrange(p1, p2)
 ```
 
 ### Description Two
-
+The quality of red wine is correlated with alcohol. As quality increases, median of alcohol tends to increse.
 
 ### Plot Three
 ```{r echo=FALSE, Plot_Three}
-
+ggplot(aes(x = alcohol, y = density), data = wineQuality) +
+  geom_jitter(aes(color=quality_class, bg=quality_class), alpha = 1/4, pch=21, cex=4) +
+  guides(color = guide_legend(reverse = T, title = 'quality'), 
+         bg = guide_legend(reverse = T, title = 'quality')) + 
+  ggtitle('Alcohol and density by quality') +
+  xlab('alcohol (%)') +
+  ylab('density (g / cm^3)')
 ```
 
 ### Description Three
-
+Alcohol has a negative correlation with density. Regardless of quality, density is negatively correlated with alcohol.
 ------
 
 # Reflection
