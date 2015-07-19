@@ -162,7 +162,9 @@ Most of red wines have a quality between 5 and 6: median 6 and mean 5.636
 wineQuality$quality_class <- factor(wineQuality$quality, labels = c(3:8))
 levels(wineQuality$quality_class)
 summary(wineQuality$quality_class)
+qplot(quality_class, data = wineQuality, geom="bar")
 ```
+
 
 # Univariate Analysis
 
@@ -176,6 +178,7 @@ The main features in the data set is quality. I'd like to find which chemical pr
 Alcohol, density and pH seems to contribute the quality. I think alcohol is most significant feature because red wine is a kind of liquor.
 
 ### Did you create any new variables from existing variables in the dataset?
+Yes, I created "quality_class" variable for bivariate or multivariate analysis of "quality" feature.
 
 ### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
 The chlorides is log-transformed. the transformed distribution shows normal distribution. Most of red wines have chlorides between 0.07 g/dm^3 to 0.09 g/dm^3: median 0.079 g/dm^3 and mean 0.08747 g/dm^3. 
@@ -199,26 +202,11 @@ ggplot(aes(x = quality, y = alcohol), data = wineQuality) +
   geom_line(stat='summary',fun.y=median)
 ```
 
-As alcho
-
-```{r, echo=FALSE, quality_vs_alcohol_linear_model}
-quantile(wineQuality$alcohol, probs = seq(0, 1, 0.01))
-quantile(wineQuality$alcohol, 0.999)
-qplot(x = alcohol, y = quality, color = I('black'), alpha = I(1/10),
-      data = subset(wineQuality,
-                    alcohol > 0 & alcohol <= quantile(wineQuality$alcohol, 0.999))) +
-  geom_smooth(method = 'lm', se = T, color = 'blue')
-
+```{r, echo=FALSE, quality_class_vs_alcohol}
+qplot(x = quality_class, y = alcohol, data = wineQuality, geom="boxplot")
 ```
 
-```{r echo=FALSE, Linear_Model}
-alcoholQualityLM <- lm(quality ~ alcohol,
-                    data = subset(wineQuality,
-                                  alcohol > 0 & alcohol <= quantile(wineQuality$alcohol, 0.999)))
-summary(alcoholQualityLM)
-```
-
-```{r echo=FALSE, Multivariate_Plots}
+```{r echo=FALSE, alchol_and_quality}
 qplot(x = alcohol, data = wineQuality) +
   facet_wrap(~quality_class)
 ggplot(aes(x = alcohol), data = wineQuality) +
@@ -226,89 +214,36 @@ ggplot(aes(x = alcohol), data = wineQuality) +
   facet_wrap(~quality)
 ```
 
-```{r, echo=FALSE, quality_vs_density}
-qplot(y = density, x = quality, data = wineQuality)
-qplot(y = density, x = quality, data = wineQuality) +
-  coord_cartesian(ylim = c(0.985, 1.005))
+As quality increases, median of alcohol tends to increse.
+
+```{r, echo=FALSE, alcohol_vs_quality_linear_model}
+# linear model for alcohol and quality. Remove outlier exceed 0.999
+# quantile(wineQuality$alcohol, probs = seq(0, 1, 0.01))
+# quantile(wineQuality$alcohol, 0.999)
+qplot(x = alcohol, y = quality, color = I('black'), alpha = I(1/10),
+      data = subset(wineQuality,
+                    alcohol > 0 & alcohol <= quantile(wineQuality$alcohol, 0.999))) +
+  geom_smooth(method = 'lm', se = T, color = 'blue')
+
 ```
 
-```{r, echo=FALSE, quality_class}
-qplot(quality_class, data = wineQuality, geom="bar")
+```{r echo=FALSE, Linear_Model_alcohol_and_quality}
+# linear model for alcohol and quality. Remove outlier exceed 0.999
+alcoholQualityLM <- lm(quality ~ alcohol,
+                    data = subset(wineQuality,
+                                  alcohol > 0 & alcohol <= quantile(wineQuality$alcohol, 0.999)))
+summary(alcoholQualityLM)
 ```
 
-```{r, echo=FALSE, quality_class_vs_alcohol}
-qplot(x = quality_class, y = alcohol, data = wineQuality, geom="boxplot")
-qplot(x = quality_class, y = alcohol, data = wineQuality, geom="boxplot") +
-  coord_cartesian(ylim=c(8, 13))
-```
-
-```{r, echo=FALSE, density_vs_alcohol}
-qplot(x = quality_class, y = density, data = wineQuality, geom="boxplot")
-qplot(x = quality_class, y = density, data = wineQuality, geom="boxplot") +
-  coord_cartesian(ylim = c(0.985,1.005))
-```
-
-```{r, echo=FALSE, quality_class_vs_fixed.acidity}
-qplot(x = quality_class, y = fixed.acidity, data = wineQuality, geom="boxplot")
-qplot(x = quality_class, y = fixed.acidity, data = wineQuality, geom="boxplot") +
-  coord_cartesian(ylim = c(5,11))
-```
-
-```{r, echo=FALSE, quality_class_vs_volatile.acidity}
-qplot(x = quality_class, y = volatile.acidity, data = wineQuality, geom="boxplot")
-qplot(x = quality_class, y = volatile.acidity, data = wineQuality, geom="boxplot") +
-  coord_cartesian(ylim = c(0.15,0.5))
-```
-
-```{r, echo=FALSE, quality_class_vs_citric.acid}
-qplot(x = quality_class, y = citric.acid, data = wineQuality, geom="boxplot")
-qplot(x = quality_class, y = citric.acid, data = wineQuality, geom="boxplot") +
-  coord_cartesian(ylim = c(0.0, 0.7))
-```
-
-```{r, echo=FALSE, quality_class_vs_residual.sugar}
-qplot(x = quality_class, y = residual.sugar, data = wineQuality, geom="boxplot")
-qplot(x = quality_class, y = residual.sugar, data = wineQuality, geom="boxplot") +
-  coord_cartesian(ylim = c(0, 25))
-```
-
-```{r, echo=FALSE, quality_class_vs_chlorides}
-qplot(x = quality_class, y = chlorides, data = wineQuality, geom="boxplot")
-qplot(x = quality_class, y = chlorides, data = wineQuality, geom="boxplot") +
-  coord_cartesian(ylim = c(0, 0.09))
-```
-
-```{r, echo=FALSE, quality_class_vs_free.sulfur.dioxide}
-qplot(x = quality_class, y = free.sulfur.dioxide, data = wineQuality, geom="boxplot")
-qplot(x = quality_class, y = free.sulfur.dioxide, data = wineQuality, geom="boxplot") +
-  coord_cartesian(ylim = c(0, 90))
-```
-
-```{r, echo=FALSE, quality_class_vs_total.sulfur.dioxide}
-qplot(x = quality_class, y = total.sulfur.dioxide, data = wineQuality, geom="boxplot")
-qplot(x = quality_class, y = total.sulfur.dioxide, data = wineQuality, geom="boxplot") +
-  coord_cartesian(ylim = c(0, 300))
-```
-
-```{r, echo=FALSE, quality_class_vs_pH}
-qplot(x = quality_class, y = pH, data = wineQuality, geom="boxplot")
-qplot(x = quality_class, y = pH, data = wineQuality, geom="boxplot") +
-  coord_cartesian(ylim = c(2.7, 3.7))
-```
-
-```{r, echo=FALSE, quality_class_vs_sulphates}
-qplot(x = quality_class, y = sulphates, data = wineQuality, geom="boxplot")
-qplot(x = quality_class, y = sulphates, data = wineQuality, geom="boxplot") +
-  coord_cartesian(ylim = c(0.2, 0.9))
-```
-
-
+The linear model of alcohol and quality has R^2 value 0.2314.
 
 ```{r echo=FALSE, alcohol_vs_density}
 qplot(x = alcohol, y = density, data = wineQuality)
 ggplot(aes(x = alcohol, y = density), data = wineQuality) +
   geom_line(stat='summary', fun.y = median)
 ```
+
+Alcohol has a negative correlation with density.
 
 ```{r echo=FALSE, alcohol_vs_sulfur_dioxide_chlorides}
 p1 <- ggplot(aes(x = alcohol, y = total.sulfur.dioxide), data = wineQuality) +
@@ -318,20 +253,90 @@ p2 <- ggplot(aes(x = alcohol, y = free.sulfur.dioxide), data = wineQuality) +
 p3 <- ggplot(aes(x = alcohol, y = chlorides), data = wineQuality) +
   geom_line(stat='summary',fun.y=median)
 
-grid.arrange(p1, p2,p3)
+grid.arrange(p1, p2, p3)
 ```
 
-```{r echo=FALSE, total.sulfur.dioxide_vs_quality}
-ggplot(aes(x = quality, y = total.sulfur.dioxide), data = wineQuality) +
-  geom_jitter(alpha = 1/5) +
-  ggtitle('total.sulfur.dioxide and quality relationship')
+Also, alcohol has a negative correlation with total.sulfur.dioxide, free.sulfur.dioxide and chlorides.
+
+```{r, echo=FALSE, quality_vs_density}
+qplot(y = density, x = quality, data = wineQuality)
+ggplot(aes(y = density, x = quality), data = wineQuality) +
+  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/6, pch=21, cex=4)
 ```
 
-```{r echo=FALSE, free.sulfur.dioxide_vs_quality}
-ggplot(aes(x = quality, y = free.sulfur.dioxide), data = wineQuality) +
-  geom_jitter(alpha = 1/5) +
-  ggtitle('free.sulfur.dioxide and quality relationship')
+```{r, echo=FALSE, density_vs_alcohol}
+qplot(x = quality_class, y = density, data = wineQuality)
+qplot(x = quality_class, y = density, data = wineQuality, geom="boxplot")
 ```
+
+As quality increases, median of density tends to decrease.
+
+```{r, echo=FALSE, quality_class_vs_fixed.acidity}
+qplot(x = quality_class, y = fixed.acidity, data = wineQuality)
+qplot(x = quality_class, y = fixed.acidity, data = wineQuality, geom="boxplot")
+```
+
+There seems to no strong relationship between quality and fixed.acidity.
+
+```{r, echo=FALSE, quality_class_vs_volatile.acidity}
+qplot(x = quality_class, y = volatile.acidity, data = wineQuality)
+qplot(x = quality_class, y = volatile.acidity, data = wineQuality, geom="boxplot")
+```
+
+As quality increases, median of density tends to decrease.
+
+```{r, echo=FALSE, quality_class_vs_citric.acid}
+qplot(x = quality_class, y = citric.acid, data = wineQuality)
+qplot(x = quality_class, y = citric.acid, data = wineQuality, geom="boxplot")
+```
+
+As quality increases, median of citric.acid tends to increase.
+
+```{r, echo=FALSE, quality_class_vs_residual.sugar}
+qplot(x = quality_class, y = residual.sugar, data = wineQuality)
+qplot(x = quality_class, y = residual.sugar, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(0, 8))
+```
+
+There seems to no strong relationship between quality and residual.sugar
+
+```{r, echo=FALSE, quality_class_vs_chlorides}
+qplot(x = quality_class, y = chlorides, data = wineQuality)
+qplot(x = quality_class, y = chlorides, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(0, 0.25))
+```
+
+As quality increases, median of chlorides tends to decrease.
+
+```{r, echo=FALSE, quality_class_vs_free.sulfur.dioxide}
+qplot(x = quality_class, y = free.sulfur.dioxide, data = wineQuality)
+qplot(x = quality_class, y = free.sulfur.dioxide, data = wineQuality, geom="boxplot")
+```
+
+There seems to no relationship between quality and free.sulfur.dioxide.
+
+```{r, echo=FALSE, quality_class_vs_total.sulfur.dioxide}
+qplot(x = quality_class, y = total.sulfur.dioxide, data = wineQuality)
+qplot(x = quality_class, y = total.sulfur.dioxide, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(0, 170))
+```
+
+There seems to no relationship between quality and total.sulfur.dioxide.
+
+```{r, echo=FALSE, quality_class_vs_pH}
+qplot(x = quality_class, y = pH, data = wineQuality)
+qplot(x = quality_class, y = pH, data = wineQuality, geom="boxplot")
+```
+
+As quality increases, median of pH tends to decrease.
+
+```{r, echo=FALSE, quality_class_vs_sulphates}
+qplot(x = quality_class, y = sulphates, data = wineQuality)
+qplot(x = quality_class, y = sulphates, data = wineQuality, geom="boxplot") +
+  coord_cartesian(ylim = c(0.3, 1.25))
+```
+
+As quality increases, median of sulphates increase
 
 ```{r echo=FALSE, total.sulfur.dioxide_vs_sulphates}
 qplot(x = total.sulfur.dioxide, y = sulphates, data = wineQuality)
@@ -360,15 +365,32 @@ ggplot(aes(x = free.sulfur.dioxide, y = residual.sugar), data = wineQuality) +
 
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
 
+Quality correlates with alcohol and volatile.acidity.
+As quality increases, median of alcohol tends to increse.
+
 ### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+
+Alcohol has a negative correlation with density.
+Alcohol also has a negative correlation with total.sulfur.dioxide, free.sulfur.dioxide and chlorides.
 
 ### What was the strongest relationship you found?
 
-
+The quality of red wine is positively correlated with alcohol and sulphates and negatively correlated with volatile.acidity.
 
 
 # Multivariate Plots Section
+```{r}
+qplot(alcohol, data = wineQuality,
+      color = quality_class, geom = 'density')
+```
 
+```{r echo=FALSE, alcohol_density_and_quality}
+qplot(x = alcohol, y = density, data = wineQuality) +
+  facet_wrap(~quality_class)
+ggplot(aes(x = alcohol, y = density), data = wineQuality) +
+  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/10, pch=21, cex=4) +
+  facet_wrap(~quality_class)
+```
 
 ```{r echo=FALSE, alcohol_pH_and_quality}
 qplot(x = alcohol, y = pH, data = wineQuality) +
@@ -378,13 +400,11 @@ ggplot(aes(x = alcohol, y = pH), data = wineQuality) +
   facet_wrap(~quality)
 ```
 
-
-
 ```{r echo=FALSE, Build_Linear_Model}
 m1 <- lm(quality ~ alcohol,
                     data = subset(wineQuality,
                                   alcohol > 0 & alcohol <= quantile(wineQuality$alcohol, 0.999)))
-m2 <- update(m1, ~ . + density)
+m2 <- update(m1, ~ . + volatile.acidity)
 m3 <- update(m2, ~ . + sulphates)
 mtable(m1, m2, m3)
 ```
@@ -395,7 +415,11 @@ mtable(m1, m2, m3)
 
 ### Were there any interesting or surprising interactions between features?
 
+
 ### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
+Yes, I created a linear model using quality and alcohol, volatile.acidity and sulphates. The variables are selected by absolute value of correlation of quality.
+
+The variables in this linear model can account for 34.1% of the variance in the quality of red wines.
 
 ------
 
