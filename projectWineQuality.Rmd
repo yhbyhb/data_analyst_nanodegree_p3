@@ -358,7 +358,7 @@ The quality of red wine is positively correlated with alcohol and sulphates and 
 
 
 # Multivariate Plots Section
-```{r echo=FALSE, alchol_and_quality}
+```{r echo=FALSE, alchol_and_quality_geom_density}
 qplot(alcohol, data = wineQuality,
       fill = quality_class)
 qplot(alcohol, data = wineQuality,
@@ -438,23 +438,29 @@ p1 <- ggplot(aes(x = quality_class, y = alcohol), data = wineQuality)  +
   xlab('quality') +
   ylab('alcohol (%)')
 
-p2 <- ggplot(aes(x=alcohol), data = wineQuality) +
-  geom_density(aes(color = quality_class)) +
-  guides(color = guide_legend(reverse = T, title = 'quality')) +
-  ggtitle('Density of alcohol by quality') +
-  xlab('alcohol (%)') +
-  ylab('Density')
+p2 <- ggplot(aes(x = quality_class, y = sulphates), data = wineQuality)  +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0.3, 1.0)) +
+  ggtitle('sulphates by quality') +
+  xlab('quality') +
+  ylab('sulphates (g / dm^3)')
 
-grid.arrange(p1, p2)
+p3 <- ggplot(aes(x = quality_class, y = volatile.acidity), data = wineQuality)  +
+  geom_boxplot() +
+  ggtitle('volatile.acidity by quality') +
+  xlab('quality') +
+  ylab('volatile.acidity (g / dm^3)')
+
+grid.arrange(p1, p2, p3, ncol = 2)
 ```
 
 ### Description Two
-The quality of red wine is correlated with alcohol. As quality increases, median of alcohol tends to increse.
+The quality of red wine is correlated with alcohol and sulphates and negatively correlated with volatile.sulphates.
 
 ### Plot Three
 ```{r echo=FALSE, Plot_Three}
 ggplot(aes(x = alcohol, y = density), data = wineQuality) +
-  geom_jitter(aes(color=quality_class, bg=quality_class), alpha = 1/4, pch=21, cex=4) +
+  geom_jitter(aes(color=quality_class, bg=quality_class), alpha = 1/4, pch=21, cex=3) +
   guides(color = guide_legend(reverse = T, title = 'quality'), 
          bg = guide_legend(reverse = T, title = 'quality')) + 
   ggtitle('Alcohol and density by quality') +
@@ -464,6 +470,7 @@ ggplot(aes(x = alcohol, y = density), data = wineQuality) +
 
 ### Description Three
 Alcohol has a negative correlation with density. Regardless of quality, density is negatively correlated with alcohol.
+
 ------
 
 # Reflection
