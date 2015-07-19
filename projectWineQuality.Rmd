@@ -48,110 +48,106 @@ qplot(fixed.acidity, data = wineQuality, binwidth=0.2)
 Most red wines have fixed acidity between 7.10 g/dm^3 and  9.20 g/dm^3.
 
 ```{r echo=FALSE, volatile.acidity}
-qplot(volatile.acidity, data = wineQuality, binwidth = 0.01)
-qplot(volatile.acidity, data = wineQuality, binwidth = 0.01) +
-  coord_cartesian(xlim=c(0, 1.1))
+qplot(volatile.acidity, data = wineQuality)
+qplot(volatile.acidity, data = wineQuality, binwidth = 0.025) +
+  coord_cartesian(xlim=c(0, 1.4))
 ```
 
-Most red wines have volatile acidity between 4 g/dm^3 and 7 g/dm^3. There are some outliers.
+Most red wines have volatile acidity between 039 g/dm^3 and 0.64 g/dm^3. There are some outliers above 1.5
 
 ```{r echo=FALSE, citric.acid}
-qplot(citric.acid, data = wineQuality, binwidth = 0.01)
+qplot(citric.acid, data = wineQuality)
 qplot(citric.acid, data = wineQuality, binwidth = 0.01) + 
   coord_cartesian(xlim=c(0, 1.1))
 table(wineQuality$citric.acid == 0)
 ```
-
-138 red wines have 0 g/dm^3 citric acid. There is an outlier that has 1.0 g/dm^3.
 
 ```{r echo=FALSE, table_citric.acid}
 summary(wineQuality$citric.acid)
 sort(table(wineQuality$citric.acid), decreasing = T)
 ```
 
+The citric acid has several peaks around 0, 0.25 and 0.5g/dm^3.
+138 red wines have 0 g/dm^3 citric acid. There is an outlier that has 1.0 g/dm^3.
+
 ```{r echo=FALSE, residual.sugar}
 qplot(residual.sugar, data = wineQuality)
 qplot(residual.sugar, data = wineQuality, binwidth = 0.1) + 
-  coord_cartesian(xlim=c(0, 40))
-qplot(residual.sugar, data = wineQuality, binwidth = 0.05) + 
+  coord_cartesian(xlim=c(0, 16))
+qplot(residual.sugar, data = wineQuality) + 
   scale_x_log10()
 summary(wineQuality$residual.sugar)
 ```
 
+The histotram of residual sugar has one peak and long-tailed.
 Most of red wines have residual sugar between 1.9 g/dm^3 to 2.6 g/dm^3: median 2.2g/dm^3 and mean 2.539 g/dm^3.
 
 ```{r echo=FALSE, chlorides}
 qplot(chlorides, data = wineQuality, binwidth = 0.005)
 qplot(chlorides, data = wineQuality, binwidth = 0.005) + 
   coord_cartesian(xlim=c(0, 0.25))
-qplot(chlorides, data = wineQuality, binwidth = 0.01) +
+qplot(chlorides, data = wineQuality, binwidth = 0.02) +
   scale_x_log10(breaks = c(0.01, 0.025, 0.05, 0.1, 0.2, 0.5))
 summary(wineQuality$chlorides)
 ```
 
-Most of red wines have chlorides between 0.07 g/dm^3 to 0.09 g/dm^3: median 0.079 g/dm^3 and mean 0.08747 g/dm^3.
-
-```{r echo=FALSE, table_chlorides}
-sort(table(wineQuality$chlorides), decreasing = T)
-```
+Most of red wines have chlorides between 0.07 g/dm^3 to 0.09 g/dm^3: median 0.079 g/dm^3 and mean 0.08747 g/dm^3. 
+Transform x axis with log10, histogram of chlorides seems to have a normal distribution.
 
 ```{r echo=FALSE, free.sulfur.dioxide}
 qplot(free.sulfur.dioxide, data = wineQuality)
 qplot(free.sulfur.dioxide, data = wineQuality, binwidth = 0.5)
-qplot(free.sulfur.dioxide, data = wineQuality, binwidth = 0.1) +
-  scale_x_log10()
 summary(wineQuality$free.sulfur.dioxide)
 ```
 
-Most free.sulfur.dioxide values are integers. Most red wines have a free.sulfur.dioxide between 7 mg/dm^3 and 21 mg/dm^3.
+Most free.sulfur.dioxide values are integers and most of them are between 7 mg/dm^3 and 21 mg/dm^3.
 
 ```{r echo=FALSE, total.sulfur.dioxide}
 qplot(total.sulfur.dioxide, data = wineQuality, binwidth = 5)
-qplot(total.sulfur.dioxide, data = wineQuality, binwidth = 5) + 
-  coord_cartesian(xlim=c(0, 300))
+qplot(total.sulfur.dioxide, data = wineQuality, binwidth = 0.5) + 
+  coord_cartesian(xlim=c(0, 180))
 summary(wineQuality$total.sulfur.dioxide)
 ```
-All of total.sulfur.dioxide values are integers. Most red wines have a total.sulfur.dioxide between 22 mg/dm^3 and 62 mg/dm^3. There are some outliers.
+
+All of total.sulfur.dioxide values are integers. Most red wines have a total.sulfur.dioxide between 22 mg/dm^3 and 62 mg/dm^3. There are some outliers above 250 mg/dm^3.
 
 ```{r echo=FALSE, density}
+qplot(density, data = wineQuality)
 qplot(density, data = wineQuality, binwidth = 0.0005)
-qplot(density, data = wineQuality, binwidth = 0.0005) +
-  coord_cartesian(xlim=c(0.985, 1.005))
-summary(wineQuality$density)
 ```
+
+The density value seems to display a normal distribution with major values between 0.995 and 1.0.
 
 ```{r echo=FALSE, pH}
-qplot(pH, data = wineQuality, binwidth = 0.05)
-summary(wineQuality$pH)
+qplot(pH, data = wineQuality)
 ```
 
+The pH also seems to have a normal distribution.
 Most of red wines have a pH between 3.21 and 3.4: median 3.31 and mean 3.311.
 
 ```{r echo=FALSE, sulphates}
+qplot(sulphates, data = wineQuality)
 qplot(sulphates, data = wineQuality, binwidth = 0.05)
-qplot(sulphates, data = wineQuality, binwidth = 0.05) +
-  coord_cartesian(xlim=c(0.15, 1.2))
-summary(wineQuality$sulphates)
 ```
+
+The sulphates has outliers above 1.5 g/dm^3 and has peak around 0.6.
 
 ```{r echo=FALSE, alcohol}
+qplot(alcohol, data = wineQuality)
 qplot(alcohol, data = wineQuality, binwidth = 0.1)
-summary(wineQuality$alcohol)
 ```
 
+The alcohol varies between 8 to 14 with major peaks around 10.
 Most of red wines have a alcohol between 9.5 and 11.1: median 10.2 and mean 10.42.
 
 ```{r echo=FALSE, quality}
 qplot(x = quality, data = wineQuality)
 summary(wineQuality$quality)
+sort(table(wineQuality$quality), decreasing = T)
 ```
 
 All of quality values are integers and between 3 and 8.
 Most of red wines have a quality between 5 and 6: median 6 and mean 5.636
-
-```{r echo=FALSE, table_quality}
-sort(table(wineQuality$quality), decreasing = T)
-```
 
 ```{r echo=FALSE, factor_quality}
 
@@ -171,32 +167,55 @@ summary(wineQuality$quality_class)
 # Univariate Analysis
 
 ### What is the structure of your dataset?
+There are 1599 red wines and have 11 input features and 1 output feature(quality).
 
 ### What is/are the main feature(s) of interest in your dataset?
+The main features in the data set is quality. I'd like to find which chemical properties influence the quality of red wine. I suspect alcohol and some other features can be used to build a pridictive model to quality of red wine.
 
 ### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
+Alcohol, density and pH seems to contribute the quality. I think alcohol is most significant feature because red wine is a kind of liquor.
 
 ### Did you create any new variables from existing variables in the dataset?
 
 ### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
-
-
+The chlorides is log-transformed. the transformed distribution shows normal distribution. Most of red wines have chlorides between 0.07 g/dm^3 to 0.09 g/dm^3: median 0.079 g/dm^3 and mean 0.08747 g/dm^3. 
 
 # Bivariate Plots Section
 ```{r echo=FALSE, Correlation_matrix}
 cor(wineQuality[, c(1:12)])
 ```
 
-The alcohol and density are the most correlated with quality.
+The alcohol and sulphates are the most correlated with quality.
 
 ```{r, echo=FALSE, Pairs_Panel}
 pairs.panels(wineQuality[, c(1:12)])
 ```
 
 ```{r echo=FALSE, quality_vs_alcohol}
-qplot(y = alcohol, x = quality, data = wineQuality)
+qplot(x = quality, y = alcohol, data = wineQuality)
+ggplot(aes(x = quality, y = alcohol), data = wineQuality) +
+  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/10, pch=21, cex=4)
 ggplot(aes(x = quality, y = alcohol), data = wineQuality) +
   geom_line(stat='summary',fun.y=median)
+```
+
+As alcho
+
+```{r, echo=FALSE, quality_vs_alcohol_linear_model}
+quantile(wineQuality$alcohol, probs = seq(0, 1, 0.01))
+quantile(wineQuality$alcohol, 0.999)
+qplot(x = alcohol, y = quality, color = I('black'), alpha = I(1/10),
+      data = subset(wineQuality,
+                    alcohol > 0 & alcohol <= quantile(wineQuality$alcohol, 0.999))) +
+  geom_smooth(method = 'lm', se = T, color = 'blue')
+
+```
+
+```{r echo=FALSE, Linear_Model}
+alcoholQualityLM <- lm(quality ~ alcohol,
+                    data = subset(wineQuality,
+                                  alcohol > 0 & alcohol <= quantile(wineQuality$alcohol, 0.999)))
+summary(alcoholQualityLM)
 ```
 
 ```{r echo=FALSE, Multivariate_Plots}
@@ -283,22 +302,7 @@ qplot(x = quality_class, y = sulphates, data = wineQuality, geom="boxplot") +
   coord_cartesian(ylim = c(0.2, 0.9))
 ```
 
-```{r, echo=FALSE, quality_vs_alcohol_linear_model}
-quantile(wineQuality$alcohol, probs = seq(0, 1, 0.01))
-quantile(wineQuality$alcohol, 0.999)
-qplot(x = alcohol, y = quality, color = I('orange'), alpha = I(1/20),
-      data = subset(wineQuality,
-                    alcohol > 0 & alcohol <= quantile(wineQuality$alcohol, 0.999))) +
-  geom_smooth(method = 'lm', se = T, color = 'blue')
 
-```
-
-```{r echo=FALSE, Linear_Model}
-alcoholQualityLM <- lm(quality ~ alcohol,
-                    data = subset(wineQuality,
-                                  alcohol > 0 & alcohol <= quantile(wineQuality$alcohol, 0.999)))
-summary(alcoholQualityLM)
-```
 
 ```{r echo=FALSE, alcohol_vs_density}
 qplot(x = alcohol, y = density, data = wineQuality)
