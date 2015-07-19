@@ -416,7 +416,6 @@ The variables in this linear model can account for 34.1% of the variance in the 
 
 ### Plot One
 ```{r echo=FALSE, Plot_One}
-# qplot(citric.acid, data = wineQuality, binwidth = 0.01)
 ggplot(aes(x=citric.acid), data = wineQuality) +
   geom_histogram(fill = I('#099DD9'), binwidth = 0.03) +
   ggtitle('Citric acid histogram ') +
@@ -474,3 +473,12 @@ Alcohol has a negative correlation with density. Regardless of quality, density 
 ------
 
 # Reflection
+The data set contains 1599 red variants of the Portuguese "Vinho Verde" wine. I started by understanding the individual variables in the data set, and I was interested in "alcohol" feature because wine is a kind of liquor. 
+
+During the exploring data set, I found interesting distribution with "citric.acid". It has three peaks around 0, 0.25 and 0.5g/dm^3. About 9% of red wine has 0 "citric.acid".
+
+As I expected, the most correlated feature of quality is "alcohol" and there are another features that has relation with quality. "volatile.acidity" is also correlated with quality and "sulphates" is negatively correlated. The linear model with only "alcohol" variable has 0.231 R-sqaured value. By adding "volatile.acidity" and "sulphates", R-squared value is increased with 0.341. 
+
+"alcohol" is negatively correlated with "density" regardless of quality. Percent of "alcohol" is increased, "density" is decreased.
+
+A limitation of this analysis is that the data set sampled from the Portuguese "Vinho Verde" red wine. It might be interesting to obtain data set from various regions to eliminate any bias created by various products.
