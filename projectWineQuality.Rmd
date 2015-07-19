@@ -2,12 +2,7 @@ Wine Quality Reds Exploration by HanByul Yang
 ========================================================
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
-# in your analysis in this code chunk.
-
-# Notice that the parameter "echo" was set to FALSE for this code chunk.
-# This prevents the code from displaying in the knitted HTML output.
-# You should set echo=FALSE for all code chunks in your file.
-
+# Loading required libraries
 library(ggplot2)
 library(GGally)
 library(scales)
@@ -19,15 +14,15 @@ library(psych)
 ```
 
 ```{r echo=FALSE, Load_the_Data}
-# Load the Data
-df <- read.csv('wineQualityWhites.csv')
+# Loading the Data
+df <- read.csv('wineQualityReds.csv')
 
 # Remove unnecessary column
 drops <- c("X")
 wineQuality <- df[, !(names(df) %in% drops)]
 ```
 
-# Univariate Plots Section
+# Summary of the data set
 ```{r echo=FALSE, Summary}
 # Summarize the data set
 dim(wineQuality)
@@ -36,14 +31,18 @@ str(wineQuality)
 summary(wineQuality)
 ```
 
-The median qulity of red wine is 6. median residual.sugar is 2.2 g / dm^3.
+1. Data set consists of 1599 red wine and have 11 input attributes and 1 output attributes.
+1. The quality is varies from 3 to 8 with median 6.
+1. The alcohol is varies from 8.4% to 14.9%.
+1. The median qulity of red wine is 6. median residual.sugar is 2.2 g / dm^3.
 median alcohol of red wine is 10.2 %.
 
+# Univariate Plots Section
 
 ```{r echo=FALSE, fixed.acidity}
 # qplot(fixed.acidity, data = wineQuality)
 qplot(fixed.acidity, data = wineQuality)
-qplot(fixed.acidity, data = wineQuality, binwidth=0.5)
+qplot(fixed.acidity, data = wineQuality, binwidth=0.2)
 ```
 
 Most red wines have fixed acidity between 7.10 g/dm^3 and  9.20 g/dm^3.
@@ -164,7 +163,7 @@ sort(table(wineQuality$quality), decreasing = T)
 # summary(wineQuality$quality_class)
 # 
 # wineQuality$quality_class <- factor(wineQuality$quality_class, labels = c("low", "mid", "high"))
-wineQuality$quality_class <- factor(wineQuality$quality, labels = c(3:9))
+wineQuality$quality_class <- factor(wineQuality$quality, labels = c(3:8))
 levels(wineQuality$quality_class)
 summary(wineQuality$quality_class)
 ```
@@ -196,6 +195,16 @@ pairs.panels(wineQuality[, c(1:12)])
 
 ```{r echo=FALSE, quality_vs_alcohol}
 qplot(y = alcohol, x = quality, data = wineQuality)
+ggplot(aes(x = quality, y = alcohol), data = wineQuality) +
+  geom_line(stat='summary',fun.y=median)
+```
+
+```{r echo=FALSE, Multivariate_Plots}
+qplot(x = alcohol, data = wineQuality) +
+  facet_wrap(~quality_class)
+ggplot(aes(x = alcohol), data = wineQuality) +
+  geom_density()  +
+  facet_wrap(~quality)
 ```
 
 ```{r, echo=FALSE, quality_vs_density}
@@ -273,6 +282,7 @@ qplot(x = quality_class, y = sulphates, data = wineQuality, geom="boxplot")
 qplot(x = quality_class, y = sulphates, data = wineQuality, geom="boxplot") +
   coord_cartesian(ylim = c(0.2, 0.9))
 ```
+
 ```{r, echo=FALSE, quality_vs_alcohol_linear_model}
 quantile(wineQuality$alcohol, probs = seq(0, 1, 0.01))
 quantile(wineQuality$alcohol, 0.999)
@@ -290,6 +300,58 @@ alcoholQualityLM <- lm(quality ~ alcohol,
 summary(alcoholQualityLM)
 ```
 
+```{r echo=FALSE, alcohol_vs_density}
+qplot(x = alcohol, y = density, data = wineQuality)
+ggplot(aes(x = alcohol, y = density), data = wineQuality) +
+  geom_line(stat='summary', fun.y = median)
+```
+
+```{r echo=FALSE, alcohol_vs_sulfur_dioxide_chlorides}
+p1 <- ggplot(aes(x = alcohol, y = total.sulfur.dioxide), data = wineQuality) +
+  geom_line(stat='summary',fun.y=median)
+p2 <- ggplot(aes(x = alcohol, y = free.sulfur.dioxide), data = wineQuality) +
+  geom_line(stat='summary',fun.y=median)
+p3 <- ggplot(aes(x = alcohol, y = chlorides), data = wineQuality) +
+  geom_line(stat='summary',fun.y=median)
+
+grid.arrange(p1, p2,p3)
+```
+
+```{r echo=FALSE, total.sulfur.dioxide_vs_quality}
+ggplot(aes(x = quality, y = total.sulfur.dioxide), data = wineQuality) +
+  geom_jitter(alpha = 1/5) +
+  ggtitle('total.sulfur.dioxide and quality relationship')
+```
+
+```{r echo=FALSE, free.sulfur.dioxide_vs_quality}
+ggplot(aes(x = quality, y = free.sulfur.dioxide), data = wineQuality) +
+  geom_jitter(alpha = 1/5) +
+  ggtitle('free.sulfur.dioxide and quality relationship')
+```
+
+```{r echo=FALSE, total.sulfur.dioxide_vs_sulphates}
+qplot(x = total.sulfur.dioxide, y = sulphates, data = wineQuality)
+ggplot(aes(x = total.sulfur.dioxide, y = sulphates), data = wineQuality) +
+  geom_line(stat='summary',fun.y=median)
+```
+
+```{r echo=FALSE, total.sulfur.dioxide_vs_residual.sugar}
+qplot(x = total.sulfur.dioxide, y = residual.sugar, data = wineQuality)
+ggplot(aes(x = total.sulfur.dioxide, y = residual.sugar), data = wineQuality) +
+  geom_line(stat='summary',fun.y=median)
+```
+
+```{r echo=FALSE, free.sulfur.dioxide_vs_sulphates}
+qplot(x = free.sulfur.dioxide, y = sulphates, data = wineQuality)
+ggplot(aes(x = free.sulfur.dioxide, y = sulphates), data = wineQuality) +
+  geom_line(stat='summary',fun.y=median)
+```
+
+```{r echo=FALSE, free.sulfur.dioxide_vs_residual.sugar}
+qplot(x = free.sulfur.dioxide, y = residual.sugar, data = wineQuality)
+ggplot(aes(x = free.sulfur.dioxide, y = residual.sugar), data = wineQuality) +
+  geom_line(stat='summary',fun.y=median)
+```
 # Bivariate Analysis
 
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
@@ -303,134 +365,15 @@ summary(alcoholQualityLM)
 
 # Multivariate Plots Section
 
-```{r echo=FALSE, Multivariate_Plots}
-makeProfilePlot <- function(mylist,names)
-{
-     require(RColorBrewer)
-     # find out how many variables we want to include
-     numvariables <- length(mylist)
-     # choose 'numvariables' random colours
-     colours <- brewer.pal(numvariables,"Set1")
-     # find out the minimum and maximum values of the variables:
-     mymin <- 1e+20
-     mymax <- 1e-20
-     for (i in 1:numvariables)
-     {
-        vectori <- mylist[[i]]
-        mini <- min(vectori)
-        maxi <- max(vectori)
-        if (mini < mymin) { mymin <- mini }
-        if (maxi > mymax) { mymax <- maxi }
-     }
-     # plot the variables
-     for (i in 1:numvariables)
-     {
-        vectori <- mylist[[i]]
-        namei <- names[i]
-        colouri <- colours[i]
-        if (i == 1) { plot(vectori,col=colouri,type="l",ylim=c(mymin,mymax)) }
-        else         { points(vectori, col=colouri,type="l")                                     }
-        lastxval <- length(vectori)
-        lastyval <- vectori[length(vectori)]
-        text((lastxval-10),(lastyval),namei,col="black",cex=0.6)
-     }
- }
 
-library(RColorBrewer)
-names <- c("alcohol","density","residual.sugar","sulphates","pH")
-mylist <- list(wineQuality$alcohol,wineQuality$density,wineQuality$residual.sugar,wineQuality$sulphates,wineQuality$pH)
-makeProfilePlot(mylist,names)
+```{r echo=FALSE, alcohol_pH_and_quality}
+qplot(x = alcohol, y = pH, data = wineQuality) +
+  facet_wrap(~quality)
+ggplot(aes(x = alcohol, y = pH), data = wineQuality) +
+  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/10, pch=21, cex=4) +
+  facet_wrap(~quality)
 ```
 
-```{r}
-sapply(wineQuality[1:12],mean)
-```
-
-```{r}
-printMeanAndSdByGroup <- function(variables,groupvariable)
-{
-     # find the names of the variables
-     variablenames <- c(names(groupvariable),names(as.data.frame(variables)))
-     # within each group, find the mean of each variable
-     groupvariable <- groupvariable[,1] # ensures groupvariable is not a list
-     means <- aggregate(as.matrix(variables) ~ groupvariable, FUN = mean)
-     names(means) <- variablenames
-     print(paste("Means:"))
-     print(means)
-     # within each group, find the standard deviation of each variable:
-     sds <- aggregate(as.matrix(variables) ~ groupvariable, FUN = sd)
-     names(sds) <- variablenames
-     print(paste("Standard deviations:"))
-     print(sds)
-     # within each group, find the number of samples:
-     samplesizes <- aggregate(as.matrix(variables) ~ groupvariable, FUN = length)
-     names(samplesizes) <- variablenames
-     print(paste("Sample sizes:"))
-     print(samplesizes)
-}
-printMeanAndSdByGroup(wineQuality[1:12],wineQuality[12])
-```
-
-```{r}
-calcWithinGroupsVariance <- function(variable,groupvariable)
-  {
-     # find out how many values the group variable can take
-     groupvariable2 <- as.factor(groupvariable[[1]])
-     levels <- levels(groupvariable2)
-     numlevels <- length(levels)
-     # get the mean and standard deviation for each group:
-     numtotal <- 0
-     denomtotal <- 0
-     for (i in 1:numlevels)
-     {
-        leveli <- levels[i]
-        levelidata <- variable[groupvariable==leveli,]
-        levelilength <- length(levelidata)
-        # get the standard deviation for group i:
-        sdi <- sd(levelidata)
-        numi <- (levelilength - 1)*(sdi * sdi)
-        denomi <- levelilength
-        numtotal <- numtotal + numi
-        denomtotal <- denomtotal + denomi
-     }
-     # calculate the within-groups variance
-     Vw <- numtotal / (denomtotal - numlevels)
-     return(Vw)
-  }
-```
-
-```{r}
-cor.test(wineQuality$quality, wineQuality$alcohol)
-```
-
-```{r}
-mosthighlycorrelated <- function(mydataframe,numtoreport)
-  {
-     # find the correlations
-     cormatrix <- cor(mydataframe)
-     # set the correlations on the diagonal or lower triangle to zero,
-     # so they will not be reported as the highest ones:
-     diag(cormatrix) <- 0
-     cormatrix[lower.tri(cormatrix)] <- 0
-     # flatten the matrix into a dataframe for easy sorting
-     fm <- as.data.frame(as.table(cormatrix))
-     # assign human-friendly names
-     names(fm) <- c("First.Variable", "Second.Variable","Correlation")
-     # sort and print the top n correlations
-     head(fm[order(abs(fm$Correlation),decreasing=T),],n=numtoreport)
-}
-mosthighlycorrelated(wineQuality[1:12], 10)
-```
-
-```{r}
-standardisedconcentrations <- as.data.frame(scale(wineQuality[1:12]))
-# sapply(standardisedconcentrations,mean)
-# sapply(standardisedconcentrations,sd)
-wineQuality.pca <- prcomp(standardisedconcentrations)
-summary(wineQuality.pca)
-screeplot(wineQuality.pca, type="lines")
-wineQuality.pca$rotation[,1]
-```
 
 
 ```{r echo=FALSE, Build_Linear_Model}
