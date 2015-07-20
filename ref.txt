@@ -1,0 +1,11 @@
+R : http://www.r-project.org/other-docs.html, 
+    http://rmarkdown.rstudio.com/
+
+general : http://stackoverflow.com/
+
+sample_project : https://s3.amazonaws.com/udacity-hosted-downloads/ud651/diamondsExample.html
+
+ggplot2 :
+http://docs.ggplot2.org
+
+google searches and class materials
