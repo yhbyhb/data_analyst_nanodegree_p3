@@ -2,6 +2,7 @@ Wine Quality Reds Exploration by HanByul Yang
 ========================================================
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+knitr::opts_chunk$set(comment = NA, echo=FALSE, message = FALSE, warnings = FALSE)
 # Loading required libraries
 library(ggplot2)
 library(GGally)
