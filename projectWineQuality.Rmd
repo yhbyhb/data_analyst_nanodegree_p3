@@ -288,7 +288,8 @@ As quality increases, median of citric.acid tends to increase.
 
 ```{r echo=FALSE, citric.acid_and_quality_class}
 qplot(citric.acid, data = wineQuality, binwidth = 0.03) +
-  facet_wrap(~quality_class)
+  facet_wrap(~quality_class) +
+  theme(axis.text.x = element_text(angle=90, size=12))
 ```
 
 The citric acid has three peaks around 0, 0.25 and 0.5g/dm^3 at each quality.
