@@ -441,20 +441,26 @@ The variables in this linear model can account for 34.1% of the variance in the 
 # Final Plots and Summary
 
 ### Plot One
-```{r echo=FALSE, Plot_One}
-ggplot(aes(x=citric.acid), data = wineQuality) +
-  geom_histogram(fill = I('#099DD9'), binwidth = 0.03) +
-  ggtitle('Citric acid histogram ') +
-  xlab('citric acid (g / dm^3 )') + 
-  ylab('Number of red wine')
+```{r Plot_One}
+# linear model for alcohol and quality. Remove outlier exceed 0.999
+wineSubset = subset(wineQuality,
+                    alcohol <= quantile(wineQuality$alcohol, 0.999))
+
+ggplot(aes(x = alcohol, y = quality), data = wineSubset) +
+  geom_point(color = I('black'), alpha = I(1/5)) +
+  geom_smooth(method = 'lm', se = T, color = 'blue') +
+  theme(plot.title = element_text(size = 16),
+        axis.title.x = element_text(size = 16),
+        axis.title.y = element_text(size = 16, angle = 90)) +
+  labs(title='Relationship between quality and alcohol',
+       x='alcohol (%)', y='quality')
 ```
 
 ### Description One
-The citric acid has three peaks around 0, 0.25 and 0.5 g/dm^3.
-138 red wines have 0 g/dm^3 citric acid which is the highest peak. 
+The highest correlated value with quality is alcohol. The linear model of quality and alcohol has R^2 value 0.2314. To improve R squared value, I added volatile.acidity and sulphates. The linear model of quality with three variable has 0.341 R squared value.
 
 ### Plot Two
-```{r echo=FALSE, Plot_Two}
+```{r Plot_Two}
 theme_set(theme_minimal(12))
 # Displaying 3 plots at once.
 p1 <- ggplot(aes(x = quality_class, y = alcohol), data = wineQuality)  +
@@ -483,7 +489,7 @@ grid.arrange(p1, p2, p3, ncol = 2)
 The quality of red wine is correlated with alcohol and sulphates and negatively correlated with volatile.sulphates.
 
 ### Plot Three
-```{r echo=FALSE, Plot_Three}
+```{r Plot_Three}
 # Replace regend from 'quality_class' to 'quality'. 
 # Legend for quality is displayed with descending order.
 ggplot(aes(x = alcohol, y = density), data = wineQuality) +
