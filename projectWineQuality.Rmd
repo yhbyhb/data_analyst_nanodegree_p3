@@ -636,37 +636,45 @@ ggplot(aes(x = alcohol, y = quality), data = wineSubset) +
 The highest correlated value with quality is alcohol. The linear model of quality and alcohol has R^2 value 0.2314. To improve R squared value, I added volatile.acidity and sulphates. The linear model of quality with three variable has 0.341 R squared value.
 
 ### Plot Two
-```{r Plot_Two}
+```{r Plot_Two, fig.width=8, fig.height=7}
 theme_set(theme_minimal(12))
 # Displaying 3 plots at once.
-p1 <- ggplot(aes(x = quality_class, y = alcohol), data = wineQuality)  +
+p1 <- ggplot(aes(x = quality_class, y = residual.sugar), data = wineQuality)  +
   geom_boxplot() +
-  ggtitle('Alcohol by quality') +
+  coord_cartesian(ylim = c(0, 5)) +
+  ggtitle('residual.sugar by quality') +
   xlab('quality') +
-  ylab('alcohol (%)')
+  ylab('residual.sugar (g/dm^3)')
 
-p2 <- ggplot(aes(x = quality_class, y = sulphates), data = wineQuality)  +
+p2 <- ggplot(aes(x = quality_class, y = chlorides), data = wineQuality)  +
   geom_boxplot() +
-  coord_cartesian(ylim = c(0.3, 1.0)) +
-  ggtitle('sulphates by quality') +
+  coord_cartesian(ylim = c(0, 0.25)) +
+  ggtitle('chlorides by quality') +
   xlab('quality') +
-  ylab('sulphates (g / dm^3)')
+  ylab('chlorides (g/dm^3)')
 
-p3 <- ggplot(aes(x = quality_class, y = volatile.acidity), data = wineQuality) +
+p3 <- ggplot(aes(x = quality_class, y = citric.acid), data = wineQuality) +
   geom_boxplot() +
-  ggtitle('volatile.acidity by quality') +
+  ggtitle('citric.acid by quality') +
   xlab('quality') +
-  ylab('volatile.acidity (g / dm^3)')
+  ylab('citric.acid (g / dm^3)')
 
 grid.arrange(p1, p2, p3, ncol = 2)
 ```
 
 ### Description Two
-The quality of red wine is correlated with alcohol and sulphates and negatively correlated with volatile.sulphates.
+There are three flavors in red wine, such as sweetness, salty and freshness. Base on each R-squared value, freshness(citric.acid) is most important flavor for quality decision. Sweetness is not related with quality of red wine. Important flavor order and R-squared values are followed below.
+
+ 1. citric.acid (R-squared value 0.055)
+ 1. chlorides (R-squared value 0.01437)
+ 1. residual.sugar (R-squared value 0.0002335)
+ 
 
 ### Plot Three
 ```{r Plot_Three, fig.width=8, fig.height=7}
-filterWineQ <- filter(wineQuality, quality==3 | quality==8)
+lowestWineQ <- filter(wineQuality, quality==3)
+HighestWineQ <- filter(wineQuality, quality==8)
+filterWineQ <-filter(wineQuality, quality==3 | quality==8)
 
 # Replace regend from 'quality_class' to 'quality'. 
 # Legend for quality is displayed with descending order.
@@ -699,17 +707,19 @@ grid.arrange(p3_1, p3_2)
 ```
 
 ### Description Three
-Alcohol has a negative correlation with density. Regardless of quality, density is negatively correlated with alcohol.
+Using relationship volatile.acidity and sulphates with alcohol, It is shown that highest and lowest quality of red wine have noticeably diffrent distribution. 
+
+Low ratio of volatile.acidity and alcohol indicates high quality red wine and high ratio  of sulphates and alcohol indicates high quality red wine.
 
 ------
 
 # Reflection
 The data set contains 1599 red variants of the Portuguese "Vinho Verde" wine. I started by understanding the individual variables in the data set, and I was interested in "alcohol" feature because wine is a kind of liquor. 
 
-During the exploring data set, I found interesting distribution with "citric.acid". It has three peaks around 0, 0.25 and 0.5g/dm^3. About 9% of red wine has 0 "citric.acid".
+Since dataset is tidy, I don't need to clean of filter it. However, all variables are numerical variables and It is hard to make bi or multi-variate plots. So I made a categorical variable 'quality_class'. Even though, I used categorical variable, It is hard to recogize difference of distribution by quality in one plot. I made each plot for categorical quality variable or filtered some interesting qualities.
+
+I presumed sweetness is highly related with quality of red wine. But surprisingly, the highest important flavor of red wine is freshness by citric acid while sweetness is the lowest import flavor.
 
 As I expected, the most correlated feature of quality is "alcohol" and there are another features that has relation with quality. "volatile.acidity" is also correlated with quality and "sulphates" is negatively correlated. The linear model with only "alcohol" variable has 0.231 R-sqaured value. By adding "volatile.acidity" and "sulphates", R-squared value is increased with 0.341. 
-
-"alcohol" is negatively correlated with "density" regardless of quality. Percent of "alcohol" is increased, "density" is decreased.
 
 Since the data set consists of samples from the specific red wine mentioned above, there is a limitation of this analysis. It might be interesting to obtain data set from various regions to eliminate any bias created by various products.
