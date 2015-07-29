@@ -280,7 +280,11 @@ summary(volatile.acidityQualityLM)
 'volatile.acidity ' is most negatively correlated with quality. The linear model has R-squred value 0.1474 without outlier abvoe 99.9%.
 
 ## Flavor and quality
-I'll investigate flavor related variables and quality.
+I'll investigate flavor related variables and quality. 
+
+ 1. residual.sugar for sweetness
+ 1. chlorides for salty
+ 1. citric.acid for fressness
 
 ### residual.sugar and quality
 ```{r echo=FALSE, residual.sugar_and_quality}
@@ -323,26 +327,8 @@ summary(chloridesQualityLM)
 
 'chlorides' show the amount of salt in wine. salty flavor also merely related with quality. Linear model of chlorides and quality has R-squared value is 0.01437.
 
-### pH and quality
-```{r echo=FALSE, pH_and_quality}
-ggplot(aes(x = quality_class, y = pH), data = wineQuality) +
-  geom_boxplot()
-
-# linear model. Remove outlier exceed 0.99
-wine_pH_subset = subset(wineQuality,
-                        pH <= quantile(wineQuality$pH, 0.99))
-qplot(x = pH, y = quality, data = wine_pH_subset,
-      color = I('black'), alpha = I(1/5)) +
-  geom_smooth(method = 'lm', se = T, color = 'blue')
-
-pHQualityLM <- lm(quality ~ pH, data = wine_pH_subset)
-summary(pHQualityLM)
-```
-
-I thought pH is related with sour taste. linear model show very low R-squared value: 0.005245. However, I'll check another acidity variables. (volatile.acidity is already investigated above.)
-
 ### citric.acid and quality
-```{r echo=FALSE, fixed.acidity_and_quality}
+```{r echo=FALSE, citric.acid_and_quality}
 ggplot(aes(x = quality_class, y = citric.acid), data = wineQuality) +
   geom_boxplot()
 
@@ -358,24 +344,7 @@ citric.acidQualityLM <- lm(quality ~ citric.acid, data = wine_c.acid_subset)
 summary(citric.acidQualityLM)
 ```
 
-### fixed.acidity and quality
-```{r echo=FALSE, fixed.acidity_and_quality}
-ggplot(aes(x = quality_class, y = fixed.acidity), data = wineQuality) +
-  geom_boxplot()
-
-# linear model. Remove outlier exceed 0.999
-wine_f.acid_subset = subset(wineQuality,
-                            fixed.acidity <= 
-                              quantile(wineQuality$fixed.acidity, 0.999))
-qplot(x = fixed.acidity, y = quality, data = wine_f.acid_subset,
-      color = I('black'), alpha = I(1/5)) +
-  geom_smooth(method = 'lm', se = T, color = 'blue')
-
-fixed.acidityQualityLM <- lm(quality ~ fixed.acidity, data = wine_f.acid_subset)
-summary(fixed.acidityQualityLM)
-```
-
-R-squred value of fixed.acidity and quality is slighty higher than pH and quality. It is not highly related with quality.
+R-squred value of linear model between citric.acid and quality is 0.055 but it is much bigger than chlorides and residual.sugar.
 
 ## similar variables investigation
 It is not related with finding variables for deciding quality. 
@@ -419,6 +388,9 @@ R-squared value is relavely low 0.05432. pH does not affected by volatile.acidit
 #   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/5, pch=21, cex=2)
 
 # wine_f.acid_subset <- Remove outlier exceed 0.999
+wine_f.acid_subset = subset(wineQuality,
+                            fixed.acidity <= 
+                              quantile(wineQuality$fixed.acidity, 0.999))
 qplot(x = fixed.acidity, y = pH, data = wine_f.acid_subset,
       color = I('black'), alpha = I(1/5)) +
   geom_smooth(method = 'lm', se = T, color = 'blue')
