@@ -285,7 +285,8 @@ I'll investigate flavor related variables and quality.
 ### residual.sugar and quality
 ```{r echo=FALSE, residual.sugar_and_quality}
 ggplot(aes(x = quality_class, y = residual.sugar), data = wineQuality) +
-  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/5, pch=21, cex=2)
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0, 6))
 
 # linear model. Remove outlier exceed 0.99
 wine_r.sugar_subset = subset(wineQuality,
@@ -305,13 +306,14 @@ It seems to no relationship between residual.sugar and quality. Sweet flavor doe
 ### chlorides and quality
 ```{r echo=FALSE, chlorides_and_quality}
 ggplot(aes(x = quality_class, y = chlorides), data = wineQuality) +
-  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/5, pch=21, cex=2)
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0, 0.3))
 
 # linear model. Remove outlier exceed 0.99
 wine_chlorides_subset = subset(wineQuality,
                              chlorides <=
                                quantile(wineQuality$chlorides, 0.99))
-qplot(x = residual.sugar, y = quality, data = wine_chlorides_subset,
+qplot(x = chlorides, y = quality, data = wine_chlorides_subset,
       color = I('black'), alpha = I(1/5)) +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
@@ -324,7 +326,7 @@ summary(chloridesQualityLM)
 ### pH and quality
 ```{r echo=FALSE, pH_and_quality}
 ggplot(aes(x = quality_class, y = pH), data = wineQuality) +
-  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/5, pch=21, cex=2)
+  geom_boxplot()
 
 # linear model. Remove outlier exceed 0.99
 wine_pH_subset = subset(wineQuality,
@@ -339,10 +341,27 @@ summary(pHQualityLM)
 
 I thought pH is related with sour taste. linear model show very low R-squared value: 0.005245. However, I'll check another acidity variables. (volatile.acidity is already investigated above.)
 
+### citric.acid and quality
+```{r echo=FALSE, fixed.acidity_and_quality}
+ggplot(aes(x = quality_class, y = citric.acid), data = wineQuality) +
+  geom_boxplot()
+
+# linear model. Remove outlier exceed 0.999
+wine_c.acid_subset = subset(wineQuality,
+                            citric.acid <=
+                              quantile(wineQuality$citric.acid, 0.999))
+qplot(x = citric.acid, y = quality, data = wine_c.acid_subset,
+      color = I('black'), alpha = I(1/5)) +
+  geom_smooth(method = 'lm', se = T, color = 'blue')
+
+citric.acidQualityLM <- lm(quality ~ citric.acid, data = wine_c.acid_subset)
+summary(citric.acidQualityLM)
+```
+
 ### fixed.acidity and quality
 ```{r echo=FALSE, fixed.acidity_and_quality}
 ggplot(aes(x = quality_class, y = fixed.acidity), data = wineQuality) +
-  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/5, pch=21, cex=2)
+  geom_boxplot()
 
 # linear model. Remove outlier exceed 0.999
 wine_f.acid_subset = subset(wineQuality,
@@ -413,8 +432,8 @@ As the median value of fixed.acidity 7.9 g/dm^3 and volatile.acidity 0.52 g/dm^3
 
 ### citric.acid and pH
 ```{r echo=FALSE, citric.acid_and_pH}
-ggplot(aes(x = citric.acid, y = pH), data = wineQuality) +
-  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/5, pch=21, cex=2)
+# ggplot(aes(x = citric.acid, y = pH), data = wineQuality) +
+#   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/5, pch=21, cex=2)
 
 qplot(x = citric.acid, y = pH, data = wineQuality,
       color = I('black'), alpha = I(1/5)) +
@@ -447,9 +466,91 @@ Relationship between fixed.acidity and pH is most highly related. Its correlatio
 
 
 # Multivariate Plots Section
-I want to check relationship among similar variables.
+First, I'd like to investigate base on correlation.
+
+### alcohol, volatile.acidity and quality
+```{r echo=FALSE, alcohol_volatile.acidity_and_quality}
+ggplot(aes(x = alcohol, y = volatile.acidity), 
+       data = wineQuality) +
+  geom_jitter(aes(color=quality_class, bg=quality_class), 
+              alpha = 1/5, pch=21, cex=2)
+```
+
+It shows weak relationship between alcohol and volatile.acidity. However It is hard to find distributions by quality. So I used facet_wrap().
+
+```{r echo=FALSE, alcohol_volatile.acidity_and_quality_facet_warp}
+ggplot(aes(x = alcohol, y = volatile.acidity), 
+       data = wineQuality) +
+  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/4, pch=21, cex=2) +
+  facet_wrap(~quality_class)
+```
+
+It is easily found that lowest(3) and highest(8) quality are distributed differently on the scatterplot.
+
+```{r echo=FALSE, alcohol_volatile.acidity_and_quality_LM}
+qplot(x = volatile.acidity/alcohol, y = quality, data = wineQuality,
+      color = I('black'), alpha = I(1/5)) +
+  geom_smooth(method = 'lm', se = T, color = 'blue')
+
+vPeraLM <- lm(quality ~ volatile.acidity/alcohol, data = wineQuality)
+summary(vPeraLM)
+```
+
+volatile.acidity / alcohol is negatively correlated with quality. Its linear model has 0.2954 R-squared value.
+
+### alcohol, sulphates and quality
+```{r echo=FALSE, alcohol_sulphates_and_quality}
+ggplot(aes(x = alcohol, y = sulphates), 
+       data = wineQuality) +
+  geom_jitter(aes(color=quality_class, bg=quality_class), 
+              alpha = 1/5, pch=21, cex=2)
+
+ggplot(aes(x = alcohol, y = sulphates), 
+       data = wineQuality) +
+  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/4, pch=21, cex=2) +
+  facet_wrap(~quality_class)
+```
+
+```{r echo=FALSE, alcohol_sulphates_and_quality_LM}
+qplot(x = sulphates/alcohol, y = quality, data = wineQuality,
+      color = I('black'), alpha = I(1/5)) +
+  geom_smooth(method = 'lm', se = T, color = 'blue')
+
+sPeraLM <- lm(quality ~ sulphates/alcohol, data = wineQuality)
+summary(sPeraLM)
+```
+
+Ratio of sulphates and alcohol is alsho negatively related with quality with R-squared value 0.2866.
+
+### volatile.acidity, sulphates and quality
+```{r echo=FALSE, volatile.acidity_sulphates_and_quality}
+ggplot(aes(x = volatile.acidity, y = sulphates), 
+       data = wineQuality) +
+  geom_jitter(aes(color=quality_class, bg=quality_class), 
+              alpha = 1/5, pch=21, cex=2)
+
+ggplot(aes(x = volatile.acidity, y = sulphates), 
+       data = wineQuality) +
+  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/4, pch=21, cex=2) +
+  facet_wrap(~quality_class)
+```
+
+```{r echo=FALSE, volatile.acidity_sulphates_and_quality_LM}
+qplot(x = sulphates/volatile.acidity, y = quality, data = wineQuality,
+      color = I('black'), alpha = I(1/5)) +
+  geom_smooth(method = 'lm', se = T, color = 'blue')
+
+sPervLM <- lm(quality ~ sulphates/volatile.acidity, data = wineQuality)
+summary(sPervLM)
+```
+
+sulphates / volatile.acidity is relatively postive related with quality. Its linear model has 0.1743 R-squared value.
+
+## similar variables investigation
+I'd like to continue from bivariate plots by adding quality_class variable. 
 First, sulfur dioxide famliy (free.sulfur.dioxide and total.sulur.dioxide)
 
+### sulfur dioxide famliy
 ```{r echo=FALSE, sulfur_dioxide_famliy}
 ggplot(aes(x = free.sulfur.dioxide, y = total.sulfur.dioxide), 
        data = wineQuality) +
@@ -464,6 +565,7 @@ ggplot(aes(x = free.sulfur.dioxide, y = total.sulfur.dioxide),
 
 Sulfur dioxide family positively correlated. There is no sigficant difference of each quality distribution.
 
+### acidity famliy
 "pH" is related with acidity. I'll check relationship between pH and acid related variables: volatile.acidity, fixed.acidity and citric.acid
 
 ```{r, acid_family_volatile.acidity}
@@ -504,21 +606,7 @@ ggplot(aes(x = pH, y = citric.acid),
 
 pH is posively correlated with volatile.acidity with low correlation value but negatively correlated with fixed.acidity and citric.acid. There is no noticeable among quality class.
 
-I think the taste of wine is mostly affected by acidity and alcohol. I check pH and alcohol.
-
-```{r echo=FALSE, alcohol_pH_and_quality}
-ggplot(aes(x = alcohol, y = pH), 
-       data = wineQuality) +
-  geom_jitter(aes(color=quality_class, bg=quality_class), 
-              alpha = 1/2, pch=21, cex=2)
-
-ggplot(aes(x = alcohol, y = pH), data = wineQuality) +
-  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/4, pch=21, cex=2) +
-  facet_wrap(~quality)
-```
-
-Alcohol and pH has positive correlation. Lowest quality(3) and highest quality(8) are distributed 
-
+### multivariate linear model
 ```{r echo=FALSE, Build_Linear_Model}
 # Remove outliers
 wineSubset = subset(wineQuality,
@@ -531,24 +619,26 @@ m3 <- update(m2, ~ . + sulphates)
 mtable(m1, m2, m3)
 ```
 
-This linear model has R^2 value 0.341. 
-Used three highest absolute correlated variables with quality such as alcohol, volatile.acidity and sulphates.
+With three hightest correlated variables (alcohol, volatile.acidity and sulphates), I build linear model for quality. Its R-squared value is 0.341. 
 
 # Multivariate Analysis
 
 ### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
 
-There is a negative correlateion between alcohol and density feature. It can be seen in every quality in red wine data set.
+Relationship between quality and alcohol is strenthed by add another variables highly correlated with qulaity. 
 
-Despite of low R-squared value of 0.341, I built a linear model that pridcit the quality of red wine. 
+In case of quality and volatile.acidity / alcohol.
+The R-squared value : 0.2954
+
+Linear model of Quality and sulphates / alcohol.
+The R-squared value : 0.2866
+
+Both are higher than the R-squared value (0.2314) of linear model of quality and alcohol.
 
 ### Were there any interesting or surprising interactions between features?
-From the above the scatter plot of alcohol and pH, there seems to be any specific relations between alcohol and pH.
+Relationship volatile.acidity and alcohol shows interesting result with using categrical quality_calss variable. The lowest(3) and highest(8) quality are distributed differently on the scatterplot.
 
-### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
-Yes, I created a linear model using quality and alcohol, volatile.acidity and sulphates. The variables are selected by absolute value of correlation of quality.
-
-The variables in this linear model can account for 34.1% of the variance in the quality of red wines.
+Relationship among sulphates, alcohol and quality is observed interesting in same manner. The lowest(3) and highest(8) quality are distributed distantly.
 
 ------
 
@@ -603,17 +693,37 @@ grid.arrange(p1, p2, p3, ncol = 2)
 The quality of red wine is correlated with alcohol and sulphates and negatively correlated with volatile.sulphates.
 
 ### Plot Three
-```{r Plot_Three}
+```{r Plot_Three, fig.width=8, fig.height=7}
+filterWineQ <- filter(wineQuality, quality==3 | quality==8)
+
 # Replace regend from 'quality_class' to 'quality'. 
 # Legend for quality is displayed with descending order.
-ggplot(aes(x = alcohol, y = density), data = wineQuality) +
+p3_1 <- ggplot(aes(x = alcohol, y = volatile.acidity), data = filterWineQ) +
   geom_jitter(aes(color=quality_class, bg=quality_class), 
-              alpha = 1/4, pch=21, cex=3) +
+              alpha = 1/2, pch=21, cex=3) +
   guides(color = guide_legend(reverse = T, title = 'quality'), 
          bg = guide_legend(reverse = T, title = 'quality')) + 
-  ggtitle('Relationship between alcohol and density by quality') +
-  xlab('alcohol (%)') +
-  ylab('density (g / cm^3)')
+  theme(plot.title = element_text(size = 13),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12, angle = 90)) +
+  labs(title='Relationship between alcohol and volatile.acidity by quality',
+       x='alcohol (%)', y='volatile.acidity (g / cm^3)')
+
+p3_2 <- ggplot(aes(x = alcohol, y = sulphates), data = filterWineQ) +
+  geom_jitter(aes(color=quality_class, bg=quality_class), 
+              alpha = 1/2, pch=21, cex=3) +
+  guides(color = guide_legend(reverse = T, title = 'quality'), 
+         bg = guide_legend(reverse = T, title = 'quality')) + 
+  theme(plot.title = element_text(size = 13),
+        axis.title.x = element_text(size = 12),
+        axis.title.y = element_text(size = 12, angle = 90)) +
+  labs(title='Relationship between alcohol and volatile.acidity by quality',
+       x='alcohol (%)', y='sulphates (g / cm^3)')  
+#   ggtitle('Relationship between alcohol and sulphates by quality') +
+#   xlab('alcohol (%)') +
+#   ylab('sulphates (g / cm^3)')
+
+grid.arrange(p3_1, p3_2)
 ```
 
 ### Description Three
