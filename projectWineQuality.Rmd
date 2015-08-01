@@ -60,58 +60,105 @@ Most red wines have volatile acidity between 039 g/dm^3 and 0.64 g/dm^3. There a
 
 ```{r citric.acid}
 qplot(citric.acid, data = wineQuality)
-qplot(citric.acid, data = wineQuality, binwidth = 0.03)
-table(wineQuality$citric.acid == 0)
 ```
 
-```{r table_citric.acid}
+The citric acid has three peaks around 0, 0.25 and 0.5g/dm^3.
+
+```{r citric.acid_statistics}
+table(wineQuality$citric.acid == 0)
 summary(wineQuality$citric.acid)
 sort(table(wineQuality$citric.acid), decreasing = T)
 ```
 
-The citric acid has three peaks around 0, 0.25 and 0.5g/dm^3.
-about 9% red wines have no citric acid. There is an outlier that has 1.0 g/dm^3.
+About 9% red wines have no citric acid. There is an outlier that has 1.0 g/dm^3.
+
+```{r citric.acid_remove_outliers}
+qplot(citric.acid, data = wineQuality, binwidth = 0.03) +
+  coord_cartesian(xlim=c(0, 0.8))
+```
+
+Adjust x-axis by removing outliers and bin width for better visualization.
 
 ```{r residual.sugar}
 qplot(residual.sugar, data = wineQuality)
 # qplot(residual.sugar, data = wineQuality, binwidth = 0.1) + 
 #   coord_cartesian(xlim=c(0, 16))
-qplot(residual.sugar, data = wineQuality) + 
-  scale_x_log10()
 summary(wineQuality$residual.sugar)
 ```
 
 The histotram of residual sugar has one peak and long-tailed.
 Most of red wines have residual sugar between 1.9 g/dm^3 to 2.6 g/dm^3: median 2.2g/dm^3 and mean 2.539 g/dm^3.
 
+```{r residual.sugar_log10}
+qplot(residual.sugar, data = wineQuality) + 
+  scale_x_log10()
+```
+
+Transformed x-axis with log10() for better visualization.
+
 ```{r chlorides}
-qplot(chlorides, data = wineQuality, binwidth = 0.005)
+qplot(chlorides, data = wineQuality)
 # qplot(chlorides, data = wineQuality, binwidth = 0.005) + 
 #   coord_cartesian(xlim=c(0, 0.25))
-qplot(chlorides, data = wineQuality, binwidth = 0.02) +
-  scale_x_log10(breaks = c(0.01, 0.025, 0.05, 0.1, 0.2, 0.5))
+```
+
+chlorides seems to have some outliers.
+
+```{r chlorides_statistics}
+sort(table(wineQuality$chlorides), decreasing = T)
 summary(wineQuality$chlorides)
 ```
 
 Most of red wines have chlorides between 0.07 g/dm^3 to 0.09 g/dm^3: median 0.079 g/dm^3 and mean 0.08747 g/dm^3. 
-Transform x axis with log10, histogram of chlorides seems to have a normal distribution.
+
+```{r chlorides_remove_outliers}
+qplot(chlorides, data = wineQuality, binwidth = 0.005) +
+  coord_cartesian(xlim=c(0, 0.3))
+  # scale_x_log10(breaks = c(0.01, 0.025, 0.05, 0.1, 0.2, 0.5))
+```
+
+Removed outliers above 0.3 g/dm^3 and adjusted bin width for better looking.
 
 ```{r free.sulfur.dioxide}
 qplot(free.sulfur.dioxide, data = wineQuality)
-qplot(free.sulfur.dioxide, data = wineQuality, binwidth = 0.5)
+```
+
+There seems to be some outliers on histogram of free.sulfur.dioxide
+
+```{r free.sulfur.dioxide_statistics}
+sort(table(wineQuality$free.sulfur.dioxide), decreasing = T)
 summary(wineQuality$free.sulfur.dioxide)
 ```
 
-Most free.sulfur.dioxide values are integers and most of them are between 7 mg/dm^3 and 21 mg/dm^3.
+Most free.sulfur.dioxide values are integers except 2 of them and Most of them are between 7 mg/dm^3 and 21 mg/dm^3.
+
+```{r free.sulfur.dioxide_remove_outliers}
+qplot(free.sulfur.dioxide, data = wineQuality) +
+  coord_cartesian(xlim=c(0, 60))
+```
+
+Removed outliers above 60 mg/dm^3.
 
 ```{r total.sulfur.dioxide}
-qplot(total.sulfur.dioxide, data = wineQuality, binwidth = 5)
-qplot(total.sulfur.dioxide, data = wineQuality, binwidth = 0.5) + 
-  coord_cartesian(xlim=c(0, 180))
+qplot(total.sulfur.dioxide, data = wineQuality)
+```
+
+There are 2 outliers above 170 mg/dm^3.
+
+```{r total.sulfur.dioxide_statistics}
+sort(table(wineQuality$total.sulfur.dioxide), decreasing = T)
 summary(wineQuality$total.sulfur.dioxide)
 ```
 
-All of total.sulfur.dioxide values are integers. Most red wines have a total.sulfur.dioxide between 22 mg/dm^3 and 62 mg/dm^3. There are some outliers above 250 mg/dm^3.
+All of total.sulfur.dioxide values are integers.
+Most red wines have a total.sulfur.dioxide between 22 mg/dm^3 and 62 mg/dm^3. median is 38 mg/dm^3. 
+
+```{r total.sulfur.dioxide_remove_outliers}
+qplot(total.sulfur.dioxide, data = wineQuality) + 
+  coord_cartesian(xlim=c(0, 170))
+```
+
+I removed outliers for better visualization.
 
 ```{r density, warning=FALSE}
 qplot(density, data = wineQuality)
@@ -131,12 +178,24 @@ Most of red wines have a pH between 3.21 and 3.4: median 3.31 and mean 3.311.
 
 ```{r sulphates}
 qplot(sulphates, data = wineQuality)
-qplot(sulphates, data = wineQuality, binwidth = 0.05) +
-  coord_cartesian(xlim=c(0.3, 1.5))
+```
+
+The sulphates has outliers above 1.5 g/dm^3 and has peak around 0.6.
+
+```{r sulphates_statistics}
+# sort(table(wineQuality$sulphates), decreasing = T)
+table(wineQuality$sulphates)
 summary(wineQuality$sulphates)
 ```
 
-The sulphates has outliers above 1.5 g/dm^3 and has peak around 0.6. Ignored above 1.5 g/dm^3 as outliers
+Median of sulphates is 0.62 g/dm^3.
+
+```{r sulphates_remove_outliers}
+qplot(sulphates, data = wineQuality) +
+  coord_cartesian(xlim=c(0.3, 1.4))
+```
+
+Ignored above 1.4 g/dm^3 as outliers for better visualization.
 
 ```{r alcohol}
 qplot(alcohol, data = wineQuality)
