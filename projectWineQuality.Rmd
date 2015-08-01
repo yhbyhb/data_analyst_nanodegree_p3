@@ -207,7 +207,9 @@ The alcohol varies between 8 to 14 with major peaks around 10.
 Most of red wines have a alcohol between 9.5 and 11.1: median 10.2 and mean 10.42.
 
 ```{r quality}
-qplot(x = quality, data = wineQuality)
+qplot(x = quality, data = wineQuality) +
+  scale_x_discrete() +
+  coord_cartesian(xlim=c(2.5, 8.5))
 summary(wineQuality$quality)
 sort(table(wineQuality$quality), decreasing = T)
 ```
@@ -215,21 +217,28 @@ sort(table(wineQuality$quality), decreasing = T)
 All of quality values are integers and between 3 and 8.
 Most of red wines have a quality between 5 and 6: median 6 and mean 5.636
 
-```{r mid_quality}
-table(wineQuality$quality == 5 | wineQuality$quality == 6)
+```{r make_quality_class_variable}
+attach(wineQuality)
+wineQuality$quality_class[quality <= 3] <- 1
+wineQuality$quality_class[quality >= 4 & quality <= 6] <- 2
+wineQuality$quality_class[quality >= 7] <- 3
+detach(wineQuality)
+
+wineQuality$quality_class <- factor(wineQuality$quality_class, labels = c("low", "medium", "high"))
 ```
 
-82.5% (1319 / 1599) are mid quality(5 and 6). 
-
-```{r factor_quality}
-# quality are integers and between 3 and 8.
-wineQuality$quality_class <- factor(wineQuality$quality, labels = c(3:8))
-# levels(wineQuality$quality_class)
-# summary(wineQuality$quality_class)
+```{r quality_class} 
 qplot(quality_class, data = wineQuality, geom="bar")
+summary(wineQuality$quality_class)
 ```
 
-Created "quality_class" factord variable for better visualization of quality histogram.
+I created "quality_class" for simple categorical analysis. It has three level of quality.
+ 
+1. low (quality <= 3 or 0, 1, 2, 3)
+1. medium (4 <= quality <= 6 or 4, 5, 6)
+1. hight (7 <= quality or 7, 8, 9, 10)
+
+85.8% (1372 / 1599) are medium quality
 
 # Univariate Analysis
 
@@ -268,22 +277,25 @@ First, I will look into scatterplots involving quality and highly correlated var
 
 ### alcohol and quality
 
-```{r alcohol_and_quality_class}
-ggplot(aes(x = quality_class, y = alcohol), data = wineQuality) +
-  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/10, pch=21, cex=2)
+```{r alcohol_and_quality}
+ggplot(aes(x = quality, y = alcohol), data = wineQuality) +
+  geom_jitter(colour = 'black', fill = 'black',  alpha = 1/5, pch=21, cex=2) + 
+  scale_x_discrete() +
+  coord_cartesian(xlim=c(2.5, 8.5))
 ```
 
 Since the scatterplot is overplotted, I used jitter and alpha for a better visual.
 
-```{r alchol_and_quality_class_boxplot}
-qplot(x = quality_class, y = alcohol, data = wineQuality, geom="boxplot")
+```{r alchol_and_quality_boxplot}
+ggplot(aes(x = factor(quality), y = alcohol), data = wineQuality) +
+  geom_boxplot()
 ```
 
-I used factored variable 'quality_class' for boxplot. The boxplot shows that medians alcohol value of each quality have positive slope.
+I used factored variable 'quality' for boxplot. The boxplot shows that medians alcohol value of each quality have positive slope.
 
 ```{r alchol_and_quality_density}
 qplot(alcohol, data = wineQuality,
-      color = quality_class, geom = 'density')
+      color = factor(quality), geom = 'density')
 ```
 
 With density function, we can see the positive correlation between alcohol and quality.
@@ -305,7 +317,7 @@ The linear model of alcohol and quality has R-squred value 0.2314. 'wineSubset' 
 
 ### sulphates and quality
 ```{r sulphates_and_quality}
-ggplot(aes(x = quality_class, y = sulphates), data = wineQuality) +
+ggplot(aes(x = quality, y = sulphates), data = wineQuality) +
   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/5, pch=21, cex=2)
 
 # Remove outlier exceed 0.99
@@ -323,7 +335,7 @@ summary(sulphatesQualityLM)
 
 ### voltile.acidity and quality
 ```{r volatile.acidity_and_quality}
-ggplot(aes(x = quality_class, y = volatile.acidity), data = wineQuality) +
+ggplot(aes(x = quality, y = volatile.acidity), data = wineQuality) +
   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/5, pch=21, cex=2)
 
 # linear model. Remove outlier exceed 0.999
@@ -350,7 +362,7 @@ I'll investigate flavor related variables and quality.
 
 ### residual.sugar and quality
 ```{r residual.sugar_and_quality}
-ggplot(aes(x = quality_class, y = residual.sugar), data = wineQuality) +
+ggplot(aes(x = quality, y = residual.sugar), data = wineQuality) +
   geom_boxplot() +
   coord_cartesian(ylim = c(0, 6))
 
@@ -371,7 +383,7 @@ It seems to no relationship between residual.sugar and quality. Sweet flavor doe
 
 ### chlorides and quality
 ```{r chlorides_and_quality}
-ggplot(aes(x = quality_class, y = chlorides), data = wineQuality) +
+ggplot(aes(x = quality, y = chlorides), data = wineQuality) +
   geom_boxplot() +
   coord_cartesian(ylim = c(0, 0.3))
 
@@ -391,7 +403,7 @@ summary(chloridesQualityLM)
 
 ### citric.acid and quality
 ```{r citric.acid_and_quality}
-ggplot(aes(x = quality_class, y = citric.acid), data = wineQuality) +
+ggplot(aes(x = quality, y = citric.acid), data = wineQuality) +
   geom_boxplot()
 
 # linear model. Remove outlier exceed 0.999
@@ -506,7 +518,7 @@ First, I'd like to investigate base on correlation.
 ```{r alcohol_volatile.acidity_and_quality}
 ggplot(aes(x = alcohol, y = volatile.acidity), 
        data = wineQuality) +
-  geom_jitter(aes(color=quality_class, bg=quality_class), 
+  geom_jitter(aes(color=factor(quality), bg=factor(quality)), 
               alpha = 1/5, pch=21, cex=2)
 ```
 
@@ -516,7 +528,7 @@ It shows weak relationship between alcohol and volatile.acidity. However It is h
 ggplot(aes(x = alcohol, y = volatile.acidity), 
        data = wineQuality) +
   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/4, pch=21, cex=2) +
-  facet_wrap(~quality_class)
+  facet_wrap(~quality)
 ```
 
 It is easily found that lowest(3) and highest(8) quality are distributed differently on the scatterplot.
@@ -536,13 +548,13 @@ volatile.acidity / alcohol is negatively correlated with quality. Its linear mod
 ```{r alcohol_sulphates_and_quality}
 ggplot(aes(x = alcohol, y = sulphates), 
        data = wineQuality) +
-  geom_jitter(aes(color=quality_class, bg=quality_class), 
+  geom_jitter(aes(color=factor(quality), bg=factor(quality)), 
               alpha = 1/5, pch=21, cex=2)
 
 ggplot(aes(x = alcohol, y = sulphates), 
        data = wineQuality) +
   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/4, pch=21, cex=2) +
-  facet_wrap(~quality_class)
+  facet_wrap(~quality)
 ```
 
 ```{r alcohol_sulphates_and_quality_LM}
@@ -560,13 +572,13 @@ Ratio of sulphates and alcohol is alsho negatively related with quality with R-s
 ```{r volatile.acidity_sulphates_and_quality}
 ggplot(aes(x = volatile.acidity, y = sulphates), 
        data = wineQuality) +
-  geom_jitter(aes(color=quality_class, bg=quality_class), 
+  geom_jitter(aes(color=factor(quality), bg=factor(quality)), 
               alpha = 1/5, pch=21, cex=2)
 
 ggplot(aes(x = volatile.acidity, y = sulphates), 
        data = wineQuality) +
   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/4, pch=21, cex=2) +
-  facet_wrap(~quality_class)
+  facet_wrap(~quality)
 ```
 
 ```{r volatile.acidity_sulphates_and_quality_LM}
@@ -581,20 +593,20 @@ summary(sPervLM)
 sulphates / volatile.acidity is relatively postive related with quality. Its linear model has 0.1743 R-squared value.
 
 ## similar variables investigation
-I'd like to continue from bivariate plots by adding quality_class variable. 
+I'd like to continue from bivariate plots by adding quality variable. 
 First, sulfur dioxide famliy (free.sulfur.dioxide and total.sulur.dioxide)
 
 ### sulfur dioxide famliy
 ```{r sulfur_dioxide_famliy}
 ggplot(aes(x = free.sulfur.dioxide, y = total.sulfur.dioxide), 
        data = wineQuality) +
-  geom_jitter(aes(color=quality_class, bg=quality_class), 
+  geom_jitter(aes(color=factor(quality), bg=factor(quality)), 
               alpha = 1/4, pch=21, cex=2)
 
 ggplot(aes(x = free.sulfur.dioxide, y = total.sulfur.dioxide), 
        data = wineQuality) +
   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/4, pch=21, cex=2) +
-  facet_wrap(~quality_class)
+  facet_wrap(~quality)
 ```
 
 Sulfur dioxide family positively correlated. There is no sigficant difference of each quality distribution.
@@ -605,37 +617,37 @@ Sulfur dioxide family positively correlated. There is no sigficant difference of
 ```{r, acid_family_volatile.acidity}
 ggplot(aes(x = pH, y = volatile.acidity), 
        data = wineQuality) +
-  geom_jitter(aes(color=quality_class, bg=quality_class), 
+  geom_jitter(aes(color=factor(quality), bg=factor(quality)), 
               alpha = 1/4, pch=21, cex=2)
 
 ggplot(aes(x = pH, y = volatile.acidity), 
        data = wineQuality) +
   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/4, pch=21, cex=2) +
-  facet_wrap(~quality_class)
+  facet_wrap(~quality)
 ```
 
 ```{r, acid_family_fixed.acidity}
 ggplot(aes(x = pH, y = fixed.acidity), 
        data = wineQuality) +
-  geom_jitter(aes(color=quality_class, bg=quality_class), 
+  geom_jitter(aes(color=factor(quality), bg=factor(quality)), 
               alpha = 1/4, pch=21, cex=2)
 
 ggplot(aes(x = pH, y = fixed.acidity), 
        data = wineQuality) +
   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/4, pch=21, cex=2) +
-  facet_wrap(~quality_class)
+  facet_wrap(~quality)
 ```
 
 ```{r, acid_family_citric.acid}
 ggplot(aes(x = pH, y = citric.acid), 
        data = wineQuality) +
-  geom_jitter(aes(color=quality_class, bg=quality_class), 
+  geom_jitter(aes(color=factor(quality), bg=factor(quality)), 
               alpha = 1/4, pch=21, cex=2)
 
 ggplot(aes(x = pH, y = citric.acid), 
        data = wineQuality) +
   geom_jitter(colour = 'black', fill = 'black',  alpha = 1/4, pch=21, cex=2) +
-  facet_wrap(~quality_class)
+  facet_wrap(~quality)
 ```
 
 pH is posively correlated with volatile.acidity with low correlation value but negatively correlated with fixed.acidity and citric.acid. There is no noticeable among quality class.
@@ -701,21 +713,21 @@ The highest correlated value with quality is alcohol. The linear model of qualit
 ```{r Plot_Two, fig.width=8, fig.height=7}
 theme_set(theme_minimal(12))
 # Displaying 3 plots at once.
-p1 <- ggplot(aes(x = quality_class, y = residual.sugar), data = wineQuality)  +
+p1 <- ggplot(aes(x = factor(quality), y = residual.sugar), data = wineQuality)  +
   geom_boxplot() +
   coord_cartesian(ylim = c(0, 5)) +
   ggtitle('residual.sugar by quality') +
   xlab('quality') +
   ylab('residual.sugar (g/dm^3)')
 
-p2 <- ggplot(aes(x = quality_class, y = chlorides), data = wineQuality)  +
+p2 <- ggplot(aes(x = factor(quality), y = chlorides), data = wineQuality)  +
   geom_boxplot() +
   coord_cartesian(ylim = c(0, 0.25)) +
   ggtitle('chlorides by quality') +
   xlab('quality') +
   ylab('chlorides (g/dm^3)')
 
-p3 <- ggplot(aes(x = quality_class, y = citric.acid), data = wineQuality) +
+p3 <- ggplot(aes(x = factor(quality), y = citric.acid), data = wineQuality) +
   geom_boxplot() +
   ggtitle('citric.acid by quality') +
   xlab('quality') +
@@ -738,10 +750,9 @@ lowestWineQ <- filter(wineQuality, quality==3)
 HighestWineQ <- filter(wineQuality, quality==8)
 filterWineQ <-filter(wineQuality, quality==3 | quality==8)
 
-# Replace regend from 'quality_class' to 'quality'. 
 # Legend for quality is displayed with descending order.
 p3_1 <- ggplot(aes(x = alcohol, y = volatile.acidity), data = filterWineQ) +
-  geom_jitter(aes(color=quality_class, bg=quality_class), 
+  geom_jitter(aes(color=factor(quality), bg=factor(quality)), 
               alpha = 1/2, pch=21, cex=3) +
   guides(color = guide_legend(reverse = T, title = 'quality'), 
          bg = guide_legend(reverse = T, title = 'quality')) + 
@@ -752,18 +763,15 @@ p3_1 <- ggplot(aes(x = alcohol, y = volatile.acidity), data = filterWineQ) +
        x='alcohol (%)', y='volatile.acidity (g / cm^3)')
 
 p3_2 <- ggplot(aes(x = alcohol, y = sulphates), data = filterWineQ) +
-  geom_jitter(aes(color=quality_class, bg=quality_class), 
+  geom_jitter(aes(color=factor(quality), bg=factor(quality)), 
               alpha = 1/2, pch=21, cex=3) +
   guides(color = guide_legend(reverse = T, title = 'quality'), 
          bg = guide_legend(reverse = T, title = 'quality')) + 
   theme(plot.title = element_text(size = 13),
         axis.title.x = element_text(size = 12),
         axis.title.y = element_text(size = 12, angle = 90)) +
-  labs(title='Relationship between alcohol and volatile.acidity by quality',
+  labs(title='Relationship between alcohol and sulphates by quality',
        x='alcohol (%)', y='sulphates (g / cm^3)')  
-#   ggtitle('Relationship between alcohol and sulphates by quality') +
-#   xlab('alcohol (%)') +
-#   ylab('sulphates (g / cm^3)')
 
 grid.arrange(p3_1, p3_2)
 ```
