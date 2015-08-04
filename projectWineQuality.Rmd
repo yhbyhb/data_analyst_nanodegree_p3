@@ -840,9 +840,8 @@ There are three flavors in red wine, such as sweetness, salty and freshness. Bas
  1. chlorides (R-squared value 0.01437)
  1. residual.sugar (R-squared value 0.0002335)
  
-There is ignorance of outliers of each plot. The residual.sugar plot ignored above 0.5 g/dm^3. Plot of chlorides ignored above 0.25 g/dm^3. 0. Above 0.8 g/dm^3 is ignored in case of citric.acid.
+There are outliers ignored of each plot. The residual.sugar plot ignores above 0.5 g/dm^3. Plot of chlorides ignores above 0.25 g/dm^3. Above 0.8 g/dm^3 are ignored in case of citric.acid.
  
-
 ### Plot Three
 ```{r Plot_Three, fig.width=8, fig.height=7}
 lowestWineQ <- filter(wineQuality, quality==3)
