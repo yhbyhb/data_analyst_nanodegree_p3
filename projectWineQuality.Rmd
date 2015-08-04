@@ -300,6 +300,7 @@ pairs.panels(wineQuality[, c(1:12)])
 
 First, I will look into scatterplots involving quality and highly correlated variables, such as alcohol, sulphates, volatile.acidity.
 
+## Correlated with quality
 ### alcohol and quality
 
 ```{r alcohol_and_quality}
@@ -566,7 +567,6 @@ Fixed acidity is most dominent fluence on pH and its R-square value is 0.4654, a
 
 Relationship between fixed.acidity and pH is most highly related. Its correlation value is 0.68 and R-squared value of linear model is 0.4654.
 
-
 # Multivariate Plots Section
 First, I'd like to investigate base on correlation.
 
@@ -825,6 +825,7 @@ p2 <- ggplot(aes(x = factor(quality), y = chlorides), data = wineQuality)  +
 
 p3 <- ggplot(aes(x = factor(quality), y = citric.acid), data = wineQuality) +
   geom_boxplot() +
+  coord_cartesian(ylim = c(0, 0.8)) +
   ggtitle('citric.acid by quality') +
   xlab('quality') +
   ylab('citric.acid (g / dm^3)')
@@ -838,6 +839,8 @@ There are three flavors in red wine, such as sweetness, salty and freshness. Bas
  1. citric.acid (R-squared value 0.055)
  1. chlorides (R-squared value 0.01437)
  1. residual.sugar (R-squared value 0.0002335)
+ 
+There is ignorance of outliers of each plot. The residual.sugar plot ignored above 0.5 g/dm^3. Plot of chlorides ignored above 0.25 g/dm^3. 0. Above 0.8 g/dm^3 is ignored in case of citric.acid.
  
 
 ### Plot Three
@@ -878,6 +881,8 @@ grid.arrange(p3_1, p3_2)
 Using relationship volatile.acidity and sulphates with alcohol, It is shown that highest and lowest quality of red wine have noticeably diffrent distribution. Low ratio of volatile.acidity and alcohol indicates high quality red wine and high ratio  of sulphates and alcohol indicates high quality red wine.
 
 In case of ratio of volatile.acidity and alcohol, Quality 3 wine has 0.084 median value which is higher than quality 8 wine has 0.032 median value. Ratio of sulphates and alcohol case, the median value of quality 3 wine is 0.053 which is lower than median of quality 8 is 0.059.
+
+Among total 1599 red wine dataset, There are 10 data of quality 3 and 18 data of quality 8. They are about 1.8% of total data set.
 
 ------
 
