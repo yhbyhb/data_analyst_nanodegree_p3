@@ -296,6 +296,7 @@ With density function, we can see the positive correlation between alcohol and q
 # Remove outlier exceed 0.999
 wineSubset = subset(wineQuality,
                     alcohol <= quantile(wineQuality$alcohol, 0.999))
+
 qplot(x = alcohol, y = quality, data = wineSubset,
       color = I('black'), alpha = I(1/10)) +
   geom_smooth(method = 'lm', se = T, color = 'blue')
@@ -306,6 +307,7 @@ The plot of linear model shows positive correlation between alcohol and quality.
 ```{r alcohol_and_quality_linear_model_statistics}
 # linear model
 alcoholQualityLM <- lm(quality ~ alcohol, data = wineSubset)
+
 summary(alcoholQualityLM)
 ```
 
@@ -323,11 +325,13 @@ Used jitter and alpha for better visualization. There are some outliers.
 # Remove outlier exceed 0.99
 wine_sulphates_Subset = subset(wineQuality,
                     sulphates <= quantile(wineQuality$sulphates, 0.99))
+
 qplot(x = sulphates, y = quality, data = wine_sulphates_Subset,
       color = I('black'), alpha = I(1/10)) +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 sulphatesQualityLM <- lm(quality ~ sulphates, data = wine_sulphates_Subset)
+
 summary(sulphatesQualityLM)
 ```
 
@@ -346,12 +350,14 @@ Similar to plot of sulphates and quality, used jitter and alpha. It seems to be 
 wine_v_acidity_Subset = subset(wineQuality,
                                volatile.acidity <=
                                  quantile(wineQuality$volatile.acidity, 0.999))
+
 qplot(x = volatile.acidity, y = quality, data = wine_v_acidity_Subset,
       color = I('black'), alpha = I(1/10)) +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 volatile.acidityQualityLM <- lm(quality ~ volatile.acidity,
                                 data = wine_v_acidity_Subset)
+
 summary(volatile.acidityQualityLM)
 ```
 
@@ -378,12 +384,14 @@ To see the trend of median, I used boxplot. It seems to be no correlation betwee
 wine_r.sugar_subset = subset(wineQuality,
                              residual.sugar <=
                                quantile(wineQuality$residual.sugar, 0.99))
+
 qplot(x = residual.sugar, y = quality, data = wine_r.sugar_subset,
       color = I('black'), alpha = I(1/5)) +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 residual.sugarQualityLM <- lm(quality ~ residual.sugar,
                               data = wine_r.sugar_subset)
+
 summary(residual.sugarQualityLM)
 ```
 
@@ -403,11 +411,13 @@ Same as above, used boxplot. It seems to be shown negative correlation between c
 wine_chlorides_subset = subset(wineQuality,
                              chlorides <=
                                quantile(wineQuality$chlorides, 0.99))
+
 qplot(x = chlorides, y = quality, data = wine_chlorides_subset,
       color = I('black'), alpha = I(1/5)) +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 chloridesQualityLM <- lm(quality ~ chlorides, data = wine_chlorides_subset)
+
 summary(chloridesQualityLM)
 ```
 
@@ -426,11 +436,13 @@ Plot seems to shows positve correlation between citric.acid and quality.
 wine_c.acid_subset = subset(wineQuality,
                             citric.acid <=
                               quantile(wineQuality$citric.acid, 0.999))
+
 qplot(x = citric.acid, y = quality, data = wine_c.acid_subset,
       color = I('black'), alpha = I(1/5)) +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 citric.acidQualityLM <- lm(quality ~ citric.acid, data = wine_c.acid_subset)
+
 summary(citric.acidQualityLM)
 ```
 
@@ -450,6 +462,7 @@ qplot(x = free.sulfur.dioxide, y = total.sulfur.dioxide, data = wineQuality,
 
 sulfur.dioxideyQualityLM <- lm(total.sulfur.dioxide ~ free.sulfur.dioxide,
                                data = wineQuality)
+
 summary(sulfur.dioxideyQualityLM)
 ```
 
@@ -463,6 +476,7 @@ qplot(x = volatile.acidity, y = pH, data = wine_v_acidity_Subset,
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 v.acidity_pH_LM <- lm(pH ~ volatile.acidity, data = wine_v_acidity_Subset)
+
 summary(v.acidity_pH_LM)
 ```
 
@@ -474,11 +488,13 @@ R-squared value is relavely low 0.05432. pH does not affected by volatile.acidit
 wine_f.acid_subset = subset(wineQuality,
                             fixed.acidity <= 
                               quantile(wineQuality$fixed.acidity, 0.999))
+
 qplot(x = fixed.acidity, y = pH, data = wine_f.acid_subset,
       color = I('black'), alpha = I(1/5)) +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 f.acidity_pH_LM <- lm(pH ~ fixed.acidity, data = wine_f.acid_subset)
+
 summary(f.acidity_pH_LM)
 ```
 
@@ -492,6 +508,7 @@ qplot(x = citric.acid, y = pH, data = wineQuality,
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 citric.acid_pH_LM <- lm(pH ~ citric.acid, data = wineQuality)
+
 summary(citric.acid_pH_LM)
 ```
 
@@ -548,6 +565,7 @@ qplot(x = volatile.acidity/alcohol, y = quality, data = wineQuality,
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 vPeraLM <- lm(quality ~ volatile.acidity/alcohol, data = wineQuality)
+
 summary(vPeraLM)
 ```
 
@@ -579,6 +597,7 @@ qplot(x = sulphates/alcohol, y = quality, data = wineQuality,
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 sPeraLM <- lm(quality ~ sulphates/alcohol, data = wineQuality)
+
 summary(sPeraLM)
 ```
 
@@ -610,6 +629,7 @@ qplot(x = sulphates/volatile.acidity, y = quality, data = wineQuality,
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 sPervLM <- lm(quality ~ sulphates/volatile.acidity, data = wineQuality)
+
 summary(sPervLM)
 ```
 
@@ -698,6 +718,7 @@ pH is posively correlated with volatile.acidity with low correlation value but n
 # Remove outliers
 wineSubset = subset(wineQuality,
                     alcohol <= quantile(wineQuality$alcohol, 0.999))
+
 # Build linear model for wine quality.
 m1 <- lm(quality ~ alcohol,
                     data = wineSubset)
@@ -753,6 +774,7 @@ The highest correlated value with quality is alcohol. The linear model of qualit
 ### Plot Two
 ```{r Plot_Two, fig.width=8, fig.height=7}
 theme_set(theme_minimal(12))
+
 # Displaying 3 plots at once.
 p1 <- ggplot(aes(x = factor(quality), y = residual.sugar), data = wineQuality) +
   geom_boxplot() +
