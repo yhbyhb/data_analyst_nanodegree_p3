@@ -331,7 +331,7 @@ wineSubset = subset(wineQuality,
                     alcohol <= quantile(wineQuality$alcohol, 0.999))
 
 qplot(x = alcohol, y = quality, data = wineSubset,
-      color = I('black'), alpha = I(1/10)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 ```
 
@@ -360,7 +360,7 @@ wine_sulphates_Subset = subset(wineQuality,
                     sulphates <= quantile(wineQuality$sulphates, 0.99))
 
 qplot(x = sulphates, y = quality, data = wine_sulphates_Subset,
-      color = I('black'), alpha = I(1/10)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 sulphatesQualityLM <- lm(quality ~ sulphates, data = wine_sulphates_Subset)
@@ -385,7 +385,7 @@ wine_v_acidity_Subset = subset(wineQuality,
                                  quantile(wineQuality$volatile.acidity, 0.999))
 
 qplot(x = volatile.acidity, y = quality, data = wine_v_acidity_Subset,
-      color = I('black'), alpha = I(1/10)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 volatile.acidityQualityLM <- lm(quality ~ volatile.acidity,
@@ -419,7 +419,7 @@ wine_r.sugar_subset = subset(wineQuality,
                                quantile(wineQuality$residual.sugar, 0.99))
 
 qplot(x = residual.sugar, y = quality, data = wine_r.sugar_subset,
-      color = I('black'), alpha = I(1/5)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 residual.sugarQualityLM <- lm(quality ~ residual.sugar,
@@ -446,7 +446,7 @@ wine_chlorides_subset = subset(wineQuality,
                                quantile(wineQuality$chlorides, 0.99))
 
 qplot(x = chlorides, y = quality, data = wine_chlorides_subset,
-      color = I('black'), alpha = I(1/5)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 chloridesQualityLM <- lm(quality ~ chlorides, data = wine_chlorides_subset)
@@ -471,7 +471,7 @@ wine_c.acid_subset = subset(wineQuality,
                               quantile(wineQuality$citric.acid, 0.999))
 
 qplot(x = citric.acid, y = quality, data = wine_c.acid_subset,
-      color = I('black'), alpha = I(1/5)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 citric.acidQualityLM <- lm(quality ~ citric.acid, data = wine_c.acid_subset)
@@ -490,7 +490,7 @@ There are some variables related each other. such as sulfur dioxide family and a
 ### free.sulfur.dioxide and total.sulfur.dioxide
 ```{r free.sulfur.dioxide_and_total.sulfur.dioxide}
 qplot(x = free.sulfur.dioxide, y = total.sulfur.dioxide, data = wineQuality,
-      color = I('black'), alpha = I(1/5)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 sulfur.dioxideyQualityLM <- lm(total.sulfur.dioxide ~ free.sulfur.dioxide,
@@ -505,7 +505,7 @@ total.sulfur.dioxide seems to be relatively high correlated with free.sulfur.dio
 ```{r volatile.acidity_and_pH}
 # wine_v_acidity_Subset <- Remove outlier exceed 0.999
 qplot(x = volatile.acidity, y = pH, data = wine_v_acidity_Subset,
-      color = I('black'), alpha = I(1/5)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 v.acidity_pH_LM <- lm(pH ~ volatile.acidity, data = wine_v_acidity_Subset)
@@ -523,7 +523,7 @@ wine_f.acid_subset = subset(wineQuality,
                               quantile(wineQuality$fixed.acidity, 0.999))
 
 qplot(x = fixed.acidity, y = pH, data = wine_f.acid_subset,
-      color = I('black'), alpha = I(1/5)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 f.acidity_pH_LM <- lm(pH ~ fixed.acidity, data = wine_f.acid_subset)
@@ -537,7 +537,7 @@ As the median value of fixed.acidity 7.9 g/dm^3 and volatile.acidity 0.52 g/dm^3
 ### citric.acid and pH
 ```{r citric.acid_and_pH}
 qplot(x = citric.acid, y = pH, data = wineQuality,
-      color = I('black'), alpha = I(1/5)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 citric.acid_pH_LM <- lm(pH ~ citric.acid, data = wineQuality)
@@ -594,7 +594,7 @@ It is easily found that lowest(3) and highest(8) quality are distributed differe
 
 ```{r alcohol_volatile.acidity_and_quality_LM}
 qplot(x = volatile.acidity/alcohol, y = quality, data = wineQuality,
-      color = I('black'), alpha = I(1/5)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 vPeraLM <- lm(quality ~ volatile.acidity/alcohol, data = wineQuality)
@@ -626,7 +626,7 @@ Similar to plot of alcohol, sulphates and quality, qual(3) and highest(8) qualit
 
 ```{r alcohol_sulphates_and_quality_LM}
 qplot(x = sulphates/alcohol, y = quality, data = wineQuality,
-      color = I('black'), alpha = I(1/5)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 sPeraLM <- lm(quality ~ sulphates/alcohol, data = wineQuality)
@@ -658,7 +658,7 @@ There is no noticeable character scatter plots by each quality.
 
 ```{r volatile.acidity_sulphates_and_quality_LM}
 qplot(x = sulphates/volatile.acidity, y = quality, data = wineQuality,
-      color = I('black'), alpha = I(1/5)) +
+      color = I('black'), alpha = I(1/5), geom = "jitter") +
   geom_smooth(method = 'lm', se = T, color = 'blue')
 
 sPervLM <- lm(quality ~ sulphates/volatile.acidity, data = wineQuality)
@@ -792,7 +792,7 @@ wineSubset = subset(wineQuality,
                     alcohol <= quantile(wineQuality$alcohol, 0.999))
 
 ggplot(aes(x = alcohol, y = quality), data = wineSubset) +
-  geom_point(color = I('black'), alpha = I(1/5)) +
+  geom_jitter(color = I('black'), alpha = I(1/5)) +
   geom_smooth(method = 'lm', se = T, color = 'blue') +
   theme(plot.title = element_text(size = 16),
         axis.title.x = element_text(size = 16),
